@@ -1,0 +1,30 @@
+{% extends "site.html" %}
+
+{% block data %}
+<div class="container" id="login">
+    {{form_open("validate", 'class="form-signin"')|raw}}
+        <h2 class="form-signin-heading">请登录</h2>
+        <p id="msg"></p>
+        <div class="block">
+            <input type="text" class="input-block-level" name="username" autocomplete="off">
+            <label class="tip">用户名</label>
+        </div>
+        <div class="block">
+            <input type="password" class="input-block-level" name="pwd">
+            <label class="tip">密码</label>
+        </div>
+        {% if has_captcha %}
+        <p class="help-block" id="p-captcha">
+            <img src="{{site_url()}}/captcha/?t={{time()}}" id="image-captcha"/><span class="btn btn-link" id="span-captcha" >看不清，换一张</span>
+        </p>
+        <div class="block">
+            <input type="text" class="input-block-level" name="captcha" autocomplete="off">
+            <label class="tip">验证码</label>
+        </div>
+        {% endif %}
+
+        <button class="btn btn-large btn-primary" type="submit">登录</button>
+        <input type="hidden" name="baseurl" value="{{site_url()}}" />
+    </form>
+</div>
+{% endblock %}

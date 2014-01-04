@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block head %}
+    <meta charset="utf-8">
+    <title>{{title}} - iPad电子云菜单系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{base_url()}}assets/img/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="{{base_url()}}assets/img/favicon.png">
+    <!-- Le styles -->
+    <link href="{{base_url()}}assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{base_url()}}assets/css/site.css?t=20140108" rel="stylesheet">
+    <!--[if lt IE 9]>
+        <script src="{{base_url()}}assets/js/html5shiv.js"></script>
+    <![endif]-->
+    <script src="{{base_url()}}assets/js/jquery.min.js"></script>
+    <script src="{{base_url()}}assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{base_url()}}assets/js/jquery.countdown.min.js"></script>
+    <script src="{{base_url()}}assets/js/md5.js"></script>
+    <script src="{{base_url()}}assets/js/site.min.js?t=20140108"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="nav-collapse collapse">
+                    <ul class="nav pull-right">
+                        {% set user = session_value("user") %}
+                        {% if not user %}
+                        <li><a href="{{site_url()}}/login/"><i class="icon-user icon-white"></i> 登录</a></li>
+                        {% else %}
+                        <li><a href="{{site_url()}}/user">您好, {{user.name}}</a></li>
+                        {% if user.role == 'buyer' %}
+                        <li><a href="{{site_url()}}/user/buy">我的交易</a></li>
+                        {% elseif user.role == 'sell' %}
+                        <li><a href="{{site_url()}}/user/sell">我的交易</a></li>
+                        {% endif %}
+                        {%if user.role in ["admin", "super", "leader", "appraiser", "waiter"] %}
+                        <li><a href="{{site_url()}}/admin/">管理</a></li>
+                        {% endif %}
+                        <li><a href="{{site_url()}}/logout/" title="退出" alt="退出"><i class="icon-off icon-white"></i> &nbsp;</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block header %}
+    <div id="logo" class="container container-fluid">
+        <div class="row-fluid">
+            <input type="hidden" id="baseurl" value="{{site_url()}}" />
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block menu %}
+    {% if user %}
+    <div id="menu" class="container nav nav-stacked">
+        <div class="navbar-inner">
+            <ul class="nav">
+                {% set route = get_route() %}
+                {% if user.role == 'super' %}
+                <li {% if route.class == 'home' %} class="active" {% endif %}><a href="{{base_url()}}">首页</a></li>
+                <li class="divider-vertical"></li>
+                <li {% if route.class == 'sale' %} class="active" {% endif %}><a href="{{site_url()}}/sale/">用户管理</a></li>
+                <li class="divider-vertical"></li>
+                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">公司管理</a></li>
+                <li class="divider-vertical"></li>
+                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">门店管理</a></li>
+                <li class="divider-vertical"></li>
+                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">iPad设备管理</a></li>
+                <li class="divider-vertical"></li>
+                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">一级分类管理</a></li>
+                <li class="divider-vertical"></li>
+                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">二级分类管理</a></li>
+                <li class="divider-vertical"></li>
+                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">菜品管理</a></li>
+                {% else %}
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+    {% endblock %}
+
+    {% block data %}
+    {% endblock %}
+
+{% endblock %}
+
+{% block footer %}
+<footer class="footer">
+    <div class="container">
+        <p>
+        &copy;{{date('Y')}} iPad电子云菜谱后台系统
+        </p>
+    </div>
+</footer>
+{% endblock %}

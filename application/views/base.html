@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="utf-8">
+    <head>
+    {% block head %}
+        <title>{% block title %}{% endblock %} - iPad电子云菜谱后台系统</title>
+    {% endblock %}
+    </head>
+    <body>
+        <div id="content">{% block content %}{% endblock %}</div>
+        {% block footer %}
+        &copy; Copyright {{ date('Y') }} by <a href="{{ base_url() }}">iPad电子云菜谱后台系统</a>.
+        {% endblock %}
+    </body>
+</html>
