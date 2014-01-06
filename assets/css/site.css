@@ -1,12 +1,9 @@
-/* Common
--------------------------------------------------- */
 body {
     padding-top: 40px;
     padding-bottom: 40px;
     background-color: #474747;
     font-family: "Microsoft YaHei","微软雅黑","宋体", Arial,Helvetica,sans-serif;
 }
-
 #content { background-color: #e4e2e3; padding-bottom: 20px; }
 .navbar-inverse .navbar-inner {
     background-color: #474747;
@@ -21,101 +18,7 @@ body {
 .navbar-inverse i {
     margin-top: 4px;
 }
-
-#logo {padding: 15px 0}
-#logo div.span9 {
-    float: left;
-}
-#logo div.span9 i {
-    margin-top: 4px;
-}
-#logo div.span9 div.pull-left {
-    margin-top: 25px;
-}
-#logo div.span9 div.pull-right {
-    margin-top: 15px;
-}
-
-#logo form.s {
-    width: 474px;
-}
-#logo form.s div.input-append {
-    margin:0;
-    padding: 2px;
-    background-color: #68AF21;
-}
-#logo form.s div.input-append input {
-    width: 360px;
-    height: 30px;
-    line-height:30px;
-    border:0 none;
-}
-#logo form.s div.input-append button {
-    width: 98px;
-    height: 30px;
-    line-height: 30px;
-    font-size: 16px;
-    font-weight: 700;
-    color: #fff;
-    background-color: #68AF21;
-    margin-top: 3px;
-    border: 0 none;
-    cursor: pointer;
-}
-#logo div.block {
-    position: relative;
-}
-#logo label.tip {
-    position: absolute;
-    color: #808080;
-    font-size: 14px;
-    left: 10px;
-    top: 10px;
-    cursor: inherit;
-}
-#logo div.pull-right div {
-    font-size: 16px;
-}
-
-#menu div.navbar-inner {
-    background-color: #4467af;
-    background-image: -moz-linear-gradient(top, #486bb5, #2a4273);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#486bb5), to(#2a4273));
-    background-image: -webkit-linear-gradient(top, #486bb5, #2a4273);
-    background-image: -o-linear-gradient(top, #486bb5, #2a4273);
-    background-image: linear-gradient(to bottom, #486bb5, #2a4273);
-    background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff2a4273', endColorstr='#ff486bb5', GradientType=0);
-    border: 1px solid #536994;
-}
-#menu div.navbar-inner li.divider-vertical {
-    width:1px;
-    border-right: 1px solid #486bb5;
-    border-left: 1px solid #2a4273;
-}
-#menu div.navbar-inner li a {
-    width: 130px;
-    color: #bdd4e4;
-    text-align: center;
-    font-size: 15px;
-    font-weight: bold;
-    text-shadow: 0 0 0 #e4e2e3;
-}
-#menu div.navbar-inner li.active a, #menu div.navbar-inner li a:hover {
-    color: #ffffff;
-}
-#menu div.navbar-inner li.active a,
-#menu div.navbar-inner li.active a:hover,
-#menu div.navbar-inner li.active a:focus {
-    color: #ffffff;
-    text-decoration: none;
-    background-color: transparent;
-    -webkit-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
-    -moz-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
-    box-shadow: inset 0 0 0 rgba(0, 0, 0, 0.125);
-}
-
-.feedback a, .backtop a, .online a {
+.feedback a, .backtop a {
     background: url(../img/icon.png) no-repeat;
 }
 .feedback {
@@ -138,7 +41,7 @@ body {
     position: fixed;
     display: none;
     _position: absolute;
-    bottom: 95px;
+    bottom: 115px;
     _bottom: "auto";
 }
 .backtop a {
@@ -150,53 +53,62 @@ body {
 .backtop a:hover {
     background-position: -42px 0;
 }
-.online {
-    position: fixed;
-    _position: absolute;
-    bottom: 140px;
-    _bottom: "auto";
+
+span.del { cursor: pointer; position: relative; top: 20px; right: 5px; background-color:#fff; }    
+span.simplecolorpicker.icon {margin-top: 4px; border-color: black;}
+
+hr {
+    margin: 5px 0;
 }
-.online a {
-    width: 40px;
-    height: 80px;
-    display: block;
-    background-position: 0 -100px;
+.nav-tabs {
+    margin-bottom: 0;
 }
-.online a:hover {
-    background-position: -42px -100px;
+.tab-content {
+    padding: 20px 20px 0 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-top-color: transparent;
+    background-color: #fff;
 }
 
-.countdown {
-    color: #333 !important;
-    font-size: 25px;
-    font-weight: bold;
+div.block {
+    position: relative;
+    padding-right: 4px;
 }
-
-.carousel-magnifier {
+div.block label.tip {
     position: absolute;
-    top: 95%;
-    left: 76%;
-    width: 80px;
-    height: 20px;
-    line-height: 20px;
-    margin-top: -20px;
-    color: #fff;
+    color: #808080;
+    font-size: 14px;
+    left: 10px;
+    top: 5px;
+    cursor: inherit;
+}
+
+div.money-preview {
+    _width:178px;
+    min-width:178px;
+    height: 30px;
+    line-height: 30px;
+    font-weight: bold;
+    border:1px solid #C5C5C5;
+    background:/*#fff*/#FFFFE4;
+    position:absolute;
+    margin:2px 0 0;
+    z-index: 1000;
+}
+.well {
+    margin-bottom: 0;
+}
+.table tr th {
     text-align: center;
-    background: #222;
-    border: 3px solid #fff;
-    -webkit-border-radius: 23px;
-    -moz-border-radius: 23px;
-    border-radius: 23px;
-    opacity: .5;
-    filter: alpha(opacity=50);
 }
-.carousel-magnifier:hover,
-.carousel-magnifier:focus {
-    color: #ffffff;
-    text-decoration: none;
-    opacity: 0.9;
-    filter: alpha(opacity=90);
+.table td.center {
+    text-align: center;
 }
+.star {
+    color: #e01d00;
+}
+
 /* Footdiver
 -------------------------------------------------- */
 .footer { text-align: center; padding: 30px 0; border-top: 1px solid #e5e5e5; background-color: #474747; }
@@ -252,571 +164,106 @@ body {
     padding: 14px 0 0 15px;
 }
 
-#aboutModal, #serviceModal {
-    margin-right: auto;
-    margin-left: auto;
-    left: 20%;
-    width: 800px;
-}
-#aboutModal .modal-body, #serviceModal .modal-body {
-    height: 700px;
-    overflow-y: hidden;
-}
-#aboutModal .modal-body iframe, #serviceModal .modal-body iframe {
-    width: 99%;
-    height: 95%;
-    border: none;
+/* Menu
+--------------------------------------*/
+ul.nav-list {
+    width: 200px;
+    margin-top:20px;
 }
 
-/* 404
+/* Sidenav for Docs
 -------------------------------------------------- */
-#error-404 {
-    padding-top: 20px;
-}
-
-/* Home
--------------------------------------------------- */
-#home div.span8 {
-    margin-left: 0;
-}
-
-#home div.sale {
-    margin-bottom: 15px;
-}
-#home div.sale div.head {
-    background: url("../img/block-left-bg.png") no-repeat;
-    height: 30px;
-    color: #ffffff;
-}
-#home div.sale div.head span.title {
-    display: block;
-    float: left;
-    margin-top: 5px;
-    text-indent: 55px;
-}
-#home div.sale div.head span.more {
-    display: block;
-    float: right;
-    margin-top: 4px;
-}
-#home div.sale ul {
-    display: block;
-    float: left;
-    margin: 0 0;
-    background-color: #ffffff;
-    padding-left: 20px;
-}
-#home div.sale li {
-    float: left;
-    height: 320px;
-    width: 132px;
-    margin-top: 10px;
-    list-style: none;
-    padding-right: 18px;
-}
-#home div.sale li div.img {
-    height: 100px;
-}
-#home div.sale li div.misc {
-    height: 180px;
-}
-#home div#consign.sale li div.misc {
-    padding-top: 10px;
-    height: 160px;
-}
-
-#home #followme {
-    height: 95px;
-    background: url(../img/followme-bg.png) no-repeat;
-}
-#home #followme img {
-    float: right;
-    padding: 15px 10px 0 0;
-}
-
-#home div.banner {
-    margin-bottom: 15px;
-}
-#home div.banner div.head {
-    background: url("../img/block-right-bg.png") no-repeat;
-    height: 30px;
-    color: #ffffff;
-}
-#home div.banner div.head span.title {
-    display: block;
-    float: left;
-    margin-top: 5px;
-    text-indent: 55px;
-}
-#home div.banner div.head span.more {
-    display: block;
-    float: right;
-    margin-top: 4px;
-}
-#home div.banner div.data {
-    background-color: #ffffff;
-    padding-top: 8px;
-}
-
-#home div.banner div.data .form-horizontal {
-    padding-top: 8px;
-    padding-bottom: 8px;
-}
-#home div.banner div.data .form-horizontal .control-group {
-    margin-bottom: 15px;
-    *margin-bottom: 8px;
-}
-#home div.banner div.data .form-horizontal .control-label {
-    float: left;
-    width: 80px;
-    padding-top: 5px;
-    text-align: right;
-}
-#home div.banner div.data .form-horizontal .controls {
-    margin-left: 85px;
-    *margin-left: 0;
-}
-#home div.banner div.data .form-horizontal .controls input {
-    width: 180px;
-}
-#home div.banner div.data .form-horizontal div#model select,
-#home div.banner div.data .form-horizontal div#area select {
-    width: 194px;
-}
-#home div.banner div.data div#msg {
-    padding-top: 4px;
-    padding-bottom: 4px;
-}
-#home #weixinModal {
-    margin-right: auto;
-    margin-left: auto;
-    left: 35%;
-    width: 400px;
-}
-/* Article
--------------------------------------------------- */
-#article div.list div.head {
-    height: 40px;
-    line-height: 40px;
-    text-indent: 10px;
-    color: #ffffff;
-    background-color:#68af21;
-}
-#article div.list div.head span.title {
-    font-weight: bold;
-}
-#article div.list ul {
-    margin-left: 0;
-    background-color: #ffffff;
-    padding-top: 20px;
-    list-style: none;
-}
-#article div.list ul li {
-    font-size: 12px;
-    text-indent: 25px;
-    padding-bottom: 8px;
-}
-#article div.list ul li.active {
-    background: url(../img/icon-arrow.png) no-repeat 12px 6px;
-}
-#article div.list ul li.active a,
-#article div.list ul li a:hover {
-    color: #68af21;
-}
-
-#article div.span9 {
-    background-color: #ffffff;
-}
-#article div.detail {
-    padding-left: 20px;
-}
-#article div#article-content h3 {
-    padding-top: 20px;
-    text-align: center;
-}
-
-/* Sale
--------------------------------------------------- */
-#sale div.list div.head {
-    height: 40px;
-    line-height: 40px;
-    text-indent: 10px;
-    color: #ffffff;
-    background-color:#68af21;
-}
-#sale div.list div.head span.title {
-    font-weight: bold;
-}
-#sale div.list ul {
-    margin-left: 0;
-    background-color: #ffffff;
-    padding-top: 20px;
-    list-style: none;
-}
-#sale div.list ul li {
-    font-size: 12px;
-    text-indent: 25px;
-    padding-bottom: 8px;
-}
-#sale div.list ul li.active {
-    background: url(../img/icon-arrow.png) no-repeat 12px 6px;
-}
-#sale div.list ul li.active a,
-#sale div.list ul li a:hover {
-    color: #68af21;
-}
-#sale div.span9 {
-    background-color: #ffffff;
-}
-
-#sale div.span9 div.page-header p {
-    padding-left: 20px;
-    padding-right: 20px;
-}
-#sale div.span9 div.data {
-    margin-top: 20px;
-}
-
-/* Buy
--------------------------------------------------- */
-#buy div.list div.head {
-    height: 40px;
-    line-height: 40px;
-    text-indent: 10px;
-    color: #ffffff;
-    background-color:#68af21;
-}
-#buy div.list div.head span.title {
-    font-weight: bold;
-}
-#buy div.list ul {
-    margin-left: 0;
-    background-color: #ffffff;
-    padding-top: 20px;
-    list-style: none;
-}
-#buy div.list ul li {
-    font-size: 12px;
-    text-indent: 25px;
-    padding-bottom: 8px;
-}
-#buy div.list ul li.active {
-    background: url(../img/icon-arrow.png) no-repeat 12px 6px;
-}
-#buy div.list ul li.active a,
-#buy div.list ul li a:hover {
-    color: #68af21;
-}
-#buy div.span9 {
-    background-color: #ffffff;
-}
-
-#buy div.span9 div.page-header p {
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-#buy div.sale {
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
-#buy div.sale div.head {
-    background: url("../img/block-left-bg.png") no-repeat;
-    height: 30px;
-    color: #ffffff;
-}
-#buy div.sale div.head span.title {
-    display: block;
-    float: left;
-    margin-top: 5px;
-    text-indent: 55px;
-}
-#buy div.sale ul {
-    display: block;
-    float: left;
-    margin: 0 0;
-    background-color: #ffffff;
-    padding-left: 20px;
-}
-#buy div.sale li {
-    float: left;
-    list-style: none;
-    width: 150px;
-    height: 320px;
-    margin-top: 10px;
-    padding-right: 18px;
-}
-#buy div.sale li div.img {
-    height: 100px;
-}
-#buy div.sale li div.misc {
-    height: 180px;
-}
-#buy div#consign.sale li div.misc {
-    padding-top: 10px;
-    height: 160px;
-}
-
-#buy-car div.span9 {
-    background-color: #ffffff;
-}
-#buy-car div.span7 {
-    width: 400px;
-    margin-top: 20px;
-}
-#buy-car div.car-info {
-    padding-top: 10px;
-    padding-right: 5px;
-    width: 270px;
-}
-#buy-car div.car-info h4.title {
-    border-bottom: 1px solid #E4E2E3;
-}
-#buy-car div.car-info p.tooltip-show {
-    font-size: 18px;
-    font-weight: bold;
-}
-#buy-car div.car-detail div.head {
-    height: 40px;
-    line-height: 40px;
-    text-indent: 10px;
-    color: #ffffff;
-    background-color: #435f9c;
-}
-#buy-car div.list div.head {
-    height: 40px;
-    line-height: 40px;
-    text-indent: 10px;
-    color: #ffffff;
-    background-color:#68af21;
-}
-#buy-car div.list div.head span.title {
-    font-weight: bold;
-}
-#buy-car div.list ul {
-    margin-left: 0;
-    background-color: #ffffff;
-    padding-top: 20px;
-    list-style: none;
-}
-#buy-car div.list ul li {
-    font-size: 12px;
-    padding-bottom: 8px;
-    padding-left: 25px;
-    text-indent: 0;
-}
-#buy-car .auction-preview {
-    _width:178px;
-    min-width:178px;
-    height: 30px;
-    line-height: 30px;
-    font-weight: bold;
-    border:1px solid #C5C5C5;
-    background:/*#fff*/#FFFFE4;
-    position:absolute;
-    margin:2px 0 0;
-    z-index: 1000;
-}
-#buy-car td {
-    width: 30%;
-}
-#buy-car td.one {
-    width: 20%;
-    text-align: right;
-    background-color: #ebebeb;
-}
-#buy-car td.score{
-    width: 20%;
-    text-align: center;
-    background-color: #ebebeb;
-}
-#buy-car td.info{
-    width: 70%;
-    background-color: #ebebeb;
-    text-align: center;
-}
-#buy-car td.center{
-    text-align: center;
-}
-
-#buy-car #pay-modal th {
-    text-align: center;
-    background-color: #ebebeb;
-}
-#buy-car #pay-modal td {
-    width: auto;
-}
-
-/* search
--------------------------------------------------- */
-#search div.list div.head {
-    height: 40px;
-    line-height: 40px;
-    text-indent: 10px;
-    color: #ffffff;
-    background-color:#68af21;
-}
-#search div.list div.head span.title {
-    font-weight: bold;
-}
-#search div.list ul {
-    margin-left: 0;
-    background-color: #ffffff;
-    padding-top: 20px;
-    list-style: none;
-}
-#search div.list ul li {
-    font-size: 12px;
-    text-indent: 25px;
-    padding-bottom: 8px;
-}
-#search div.list ul li.active {
-    background: url(../img/icon-arrow.png) no-repeat 12px 6px;
-}
-#search div.list ul li.active a,
-#search div.list ul li a:hover {
-    color: #68af21;
-}
-#search div.span9 form.page-header {
-    text-align: center;
-}
-#search table {
+.sidenav {
+    width: 228px;
+    margin: 30px 0 0;
+    padding: 0;
     background-color: #fff;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+    -moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+    box-shadow: 0 1px 4px rgba(0,0,0,.065);
 }
-#search table#list-header {
-    margin-bottom: 0;
-    color: #fff;
-    background-color: #435f9c;
-}
-#search .tagsFix {
-    position: fixed;
-    z-index: 450;
-    top: 40px;
-    width: 700px;
-    _position: absolute;
-    _top: expression(documentElement.scrollTop);
+.sidenav > li > a {
     display: block;
+    width: 190px \9;
+    margin: 0 0 -1px;
+    padding: 8px 14px;
+    border: 1px solid #e5e5e5;
 }
+.sidenav > li:first-child > a {
+    -webkit-border-radius: 6px 6px 0 0;
+    -moz-border-radius: 6px 6px 0 0;
+    border-radius: 6px 6px 0 0;
+}
+.sidenav > li:last-child > a {
+    -webkit-border-radius: 0 0 6px 6px;
+    -moz-border-radius: 0 0 6px 6px;
+    border-radius: 0 0 6px 6px;
+}
+.sidenav > .active > a {
+    position: relative;
+    z-index: 2;
+    padding: 9px 15px;
+    border: 0;
+    text-shadow: 0 1px 0 rgba(0,0,0,.15);
+    -webkit-box-shadow: inset 1px 0 0 rgba(0,0,0,.1), inset -1px 0 0 rgba(0,0,0,.1);
+    -moz-box-shadow: inset 1px 0 0 rgba(0,0,0,.1), inset -1px 0 0 rgba(0,0,0,.1);
+    box-shadow: inset 1px 0 0 rgba(0,0,0,.1), inset -1px 0 0 rgba(0,0,0,.1);
+}
+/* Chevrons */
+.sidenav .icon-chevron-right {
+    float: right;
+    margin-top: 2px;
+    margin-right: -6px;
+    opacity: .25;
+}
+.sidenav > li > a:hover {
+    background-color: #f5f5f5;
+}
+.sidenav a:hover .icon-chevron-right {
+    opacity: .5;
+}
+.sidenav .active .icon-chevron-right,
+.sidenav .active a:hover .icon-chevron-right {
+    background-image: url(../img/glyphicons-halflings-white.png);
+    opacity: 1;
+}
+.sidenav.affix {
+    top: 40px;
+}
+.sidenav.affix-bottom {
+    position: absolute;
+    top: auto;
+    bottom: 270px;
+}
+
+.ma-block {
+    position: relative;
+    margin: 15px 0;
+    padding: 39px 19px 14px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
 /* User
--------------------------------------------------- */
-#user div.list div.head {
-    height: 40px;
-    line-height: 40px;
-    text-indent: 10px;
-    color: #ffffff;
-    background-color:#68af21;
-}
-#user div.list div.head span.title {
-    font-weight: bold;
-}
-#user div.list ul {
-    margin-left: 0;
-    background-color: #ffffff;
-    padding-top: 20px;
-    list-style: none;
-}
-#user div.list ul li {
-    font-size: 12px;
-    text-indent: 25px;
-    padding-bottom: 8px;
-}
-#user div.list ul li.active {
-    background: url(../img/icon-arrow.png) no-repeat 12px 6px;
-}
-#user div.list ul li.active a,
-#user div.list ul li a:hover {
-    color: #68af21;
-}
-#user div.span9 {
-    background-color: #ffffff;
-}
+--------------------------------------*/
+#user textarea {
+    width: 500px; 
+    min-width:500px; 
+    max-width:500px; 
 
-#user div.span9 div.page-header p {
-    padding-left: 20px;
-    padding-right: 20px;
+    height:100px; 
+    min-height:100px;  
+    max-height:100px;
 }
-#user div.span9 div.data {
-    margin-top: 20px;
+#user #myModal div.modal-body div.well {
+    margin-bottom: 30px;
 }
-#user.profile table td.title {
-    width: 150px;
-    text-align: right;
-    padding-right: 10px;
-}
-#user.profile table th {
-    text-align: center;
-}
-#user.profile table td {
-    font-size: 14px;
-    border-top: 1px solid #fff;
-}
-#user.profile div.modify-pwd-pannel table td {
-    border-top: 1px solid #f5f5f5;
-}
-#user td.center {
-    text-align: center;
-}
-
-#user.buy div.span9 table th {
-    text-align: center;
-}
-#user.buy div.span9 table td {
-    font-size: 14px;
-    text-align: center;
-    vertical-align: middle;
-}
-
-#user.sell table td.title {
-    width: 80px;
-    text-align: right;
-    padding-right: 10px;
-}
-#user.sell table th {
-    text-align: center;
-}
-#user.sell table td {
-    font-size: 14px;
-    border-top: 1px solid #fff;
-}
-#user.sell div.data {
-    margin: 0 40px 10px 40px;
-}
-#user.sell div.progress {
-    margin-bottom:20px;
-}
-#user.sell div.progress div.bar {
-    width: 25%;
-    color: #9c9c9c;
-    background-color: #f7f7f7;
-    background-image: -moz-linear-gradient(top, #9c9c9c, #f9f9f9);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#9c9c9c), to(#f9f9f9));
-    background-image: -webkit-linear-gradient(top, #9c9c9c, #f9f9f9);
-    background-image: -o-linear-gradient(top, #9c9c9c, #f9f9f9);
-    background-image: linear-gradient(to bottom, #9c9c9c, #f9f9f9);
-    background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#fff9f9f9', GradientType=0);
-}
-#user.sell div.progress div.bar-success {
-    color: #fff;
-    background-color: #5eb95e;
-    background-image: -moz-linear-gradient(top, #62c462, #57a957);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#57a957));
-    background-image: -webkit-linear-gradient(top, #62c462, #57a957);
-    background-image: -o-linear-gradient(top, #62c462, #57a957);
-    background-image: linear-gradient(to bottom, #62c462, #57a957);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff57a957', GradientType=0);
-}
-#user.sell div.progress div.bar-danger {
-    color: #fff;
-    background-color: #dd514c;
-    background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#c43c35));
-    background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
-    background-image: linear-gradient(to bottom, #ee5f5b, #c43c35);
-    background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffc43c35', GradientType=0);
-}
-#user ul.thumbnails li {
-    margin: 2px;
+#user-edit #reset-pwd-modal .modal-body {
+    width: 90%;
 }

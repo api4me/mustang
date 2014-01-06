@@ -20,15 +20,11 @@ class LCommon {
     }
 /*}}}*/
 /*{{{ option */
-    public function option($type, $code = null, $all = false) {
+    public function option($type, $code = null) {
         static $data;
         if (!isset($data)) {
-            $data = array();
-            $q = "SELECT * FROM ##options ORDER BY id";
-            $query = $this->CI->db->query($q);
-            foreach($query->result() as $row) {
-                $data[$row->type][$row->code] = $all ? $row : $row->name;
-            }
+            $this->CI->config->load('options', true);
+            $data = $this->CI->config->item('options');
         }
 
         if (isset($data[$type])) {
@@ -54,18 +50,25 @@ class LCommon {
             }
 
             if ($blankline) {
-                //array_unshift($data, "");
-                $tmp = array("0" => "--");
-                foreach ($data as $key => $val) {
-                    $tmp[$key] = $val;
-                }
-                $data = $tmp;
+                $data = $this->insert_blank($data);
             }
 
             return $data;
         }
 
         return array();
+    }
+/*}}}*/
+/*{{{ insert_blank */
+    public function insert_blank($data) {
+        $tmp = array("0" => "--");
+        if (is_array($data)) {
+            foreach ($data as $key => $val) {
+                $tmp[$key] = $val;
+            }
+        }
+
+        return $tmp;
     }
 /*}}}*/
 /*{{{ md5 */
@@ -82,7 +85,15 @@ class LCommon {
         return $this->md5($this->md5($str), true);
     }
 /*}}}*/
+/*{{{ sequence */
+    public function sequence($type) {
+        if ($query = $this->CI->db->query('SELECT nextval(?) AS id;', $type)) {
+            return $query->row()->id;
+        }
 
+        return false;
+    }
+/*}}}*/
 /*{{{ validate func */
 /*{{{ is_empty */
     public function is_empty($str) {
