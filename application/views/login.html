@@ -1,8 +1,8 @@
 {% extends "site.html" %}
 
-{% block data %}
+{% block container %}
 <div class="container" id="login">
-    {{form_open("validate", 'class="form-signin"')|raw}}
+    {{form_open("validate", 'class="form-signin clearfix"')|raw}}
         <h2 class="form-signin-heading">请登录</h2>
         <p id="msg"></p>
         <div class="block">

@@ -1,0 +1,77 @@
+{% extends "site.html" %}
+
+{% block operate %}
+    <h3>用户一览</h3>
+    <div class="ma-block clearfix">
+    {{form_open('/user/index', 'class="form-inline"')|raw}}
+        <span class="label">登录ID</span>
+        {{form_input("login-id", search.LOGIN_ID, 'placeholder="登录ID"')|raw}}
+        <span class="label">用户类型</span>
+        {{form_dropdown("user-type", param.role, search.USER_TYPE, 'class="input-small"')|raw}}
+        <span class="label">是否可用</span>
+        {{form_dropdown("user-status", param.enable, search.USER_STATUS, 'class="input-small"')|raw}}
+        <button type="submit" class="btn btn-primary">Go!</button>
+    </form>
+    </div>
+{% endblock %}
+
+{% block data %}
+<div class="ma-block clearfix">
+    <table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>登录ID</th>
+            <th>显示名</th>
+            <th>手机号</th>
+            <th>用户类型</th>
+            <th>是否可用</th>
+            <th>登录时间</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in users %}
+        <tr>
+            <td>{{loop.index + search.start}}</td>
+            <td><a href="{{site_url()}}/user/edit/{{item.USER_OID}}" title="编辑">{{item.LOGIN_ID}}</a></td>
+            <td>{{item.USER_NAME}}</td>
+            <td>{{item.MOBILE}}</td>
+            <td>{{option_value("role", item.USER_TYPE)}}</td>
+            <td class="center">
+            {% if item.USER_STATUS == constant('MA_ENABLE_Y') %}
+            <span class="label label-success">
+            {{option_value("enable", item.USER_STATUS)}}
+            </span>
+            {% else %}
+            <span class="label">
+            {{option_value("enable", item.USER_STATUS)}}
+            </span>
+            {% endif %}
+            </td>
+            <td>{{item.PRE_LOGIN_DATE}}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7"><em>查了半天，没有数据，不如添加一条吧.</em></td></tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    <a class="btn span2" href="{{site_url()}}/user/edit/0">新增</a>
+    {{pagination|raw}}
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Modal header</h3>
+    </div>
+    <div class="modal-body">
+        <p>One fine body…</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <button class="btn btn-primary">Save changes</button>
+    </div>
+</div>
+
+{% endblock %}

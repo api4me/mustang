@@ -94,9 +94,25 @@ class MDishes extends CI_Model {
         $q = 'SELECT SD.DISH_OID
             , SD.STORE_OID
             , SD.COMPANY_OID
-            , SD.STORE_COST
+            , SD.DISH_COST
             FROM STORE_DISHES SD
             WHERE SD.STORE_OID=?
+        ';
+        $query = $this->db->query($q, array($id));
+        return $query->result();
+    }
+/*}}}*/
+/*{{{ load_image_by_store */
+    public function load_image_by_store($id) {
+        $q = 'SELECT DP.PIC_OID
+            , DP.PIC_NAME
+            , DP.PIC_DESCR
+            , DP.PIC_URL
+            , DP.IS_DFLT
+            , DP.IS_DISP
+            , DP.DISH_OID
+            FROM DISH_PICTURE DP
+            INNER JOIN STORE_DISHES SD ON SD.DISH_OID=DP.DISH_OID AND SD.DISH_OID=?
         ';
         $query = $this->db->query($q, array($id));
         return $query->result();

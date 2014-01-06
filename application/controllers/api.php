@@ -37,6 +37,11 @@ class Api extends CI_Controller {
         return false;
     }
 /*}}}*/
+/*{{{ getMappedStoreInfo */
+    public function getMappedStoreInfo() {
+        $this->syncStoreInfo();
+    }
+/*}}}*/
 /*{{{ syncDishesInfo */
     /**
      * 终端菜谱信息同步接口
@@ -44,8 +49,8 @@ class Api extends CI_Controller {
      */
     public function syncDishesInfo() {
         $in = array(
-            'serial' => $this->input->get('serialNumber'), 
-            'store' => $this->input->get('storeCode'), 
+            'serial' => $this->input->get_post('serialNumber'), 
+            'store' => $this->input->get_post('storeCode'), 
         );
 
         if (!$store_id = $this->validate($in['serial'], $in['store'])) {
@@ -72,8 +77,8 @@ class Api extends CI_Controller {
      */
     public function updateSystemParamSetupInfo() {
         $in = array(
-            'serial' => $this->input->get('serialNumber'), 
-            'store' => $this->input->get('storeCode'), 
+            'serial' => $this->input->get_post('serialNumber'), 
+            'store' => $this->input->get_post('storeCode'), 
         );
 
         if (!$store_id = $this->validate($in['serial'], $in['store'])) {
@@ -100,8 +105,8 @@ class Api extends CI_Controller {
      */
     public function syncFirstLevelCategoryInfo() {
         $in = array(
-            'serial' => $this->input->get('serialNumber'), 
-            'store' => $this->input->get('storeCode'), 
+            'serial' => $this->input->get_post('serialNumber'), 
+            'store' => $this->input->get_post('storeCode'), 
         );
 
         if (!$store_id = $this->validate($in['serial'], $in['store'])) {
@@ -128,8 +133,8 @@ class Api extends CI_Controller {
      */
     public function syncSecondLevelCategoryInfo() {
         $in = array(
-            'serial' => $this->input->get('serialNumber'), 
-            'store' => $this->input->get('storeCode'), 
+            'serial' => $this->input->get_post('serialNumber'), 
+            'store' => $this->input->get_post('storeCode'), 
         );
 
         if (!$store_id = $this->validate($in['serial'], $in['store'])) {
@@ -156,8 +161,8 @@ class Api extends CI_Controller {
      */
     public function syncCompanyInfo() {
         $in = array(
-            'serial' => $this->input->get('serialNumber'), 
-            'store' => $this->input->get('storeCode'), 
+            'serial' => $this->input->get_post('serialNumber'), 
+            'store' => $this->input->get_post('storeCode'), 
         );
 
         if (!$store_id = $this->validate($in['serial'], $in['store'])) {
@@ -184,8 +189,8 @@ class Api extends CI_Controller {
      */
     public function syncStoreInfo() {
         $in = array(
-            'serial' => $this->input->get('serialNumber'), 
-            'store' => $this->input->get('storeCode'), 
+            'serial' => $this->input->get_post('serialNumber'), 
+            'store' => $this->input->get_post('storeCode'), 
         );
 
         if (!$store_id = $this->validate($in['serial'], $in['store'])) {
@@ -212,8 +217,8 @@ class Api extends CI_Controller {
      */
     public function syncDishesAndSecLvlCateInfo() {
         $in = array(
-            'serial' => $this->input->get('serialNumber'), 
-            'store' => $this->input->get('storeCode'), 
+            'serial' => $this->input->get_post('serialNumber'), 
+            'store' => $this->input->get_post('storeCode'), 
         );
 
         if (!$store_id = $this->validate($in['serial'], $in['store'])) {
@@ -240,8 +245,8 @@ class Api extends CI_Controller {
      */
     public function syncStoreAndDishesInfo() {
         $in = array(
-            'serial' => $this->input->get('serialNumber'), 
-            'store' => $this->input->get('storeCode'), 
+            'serial' => $this->input->get_post('serialNumber'), 
+            'store' => $this->input->get_post('storeCode'), 
         );
 
         if (!$store_id = $this->validate($in['serial'], $in['store'])) {
@@ -254,6 +259,68 @@ class Api extends CI_Controller {
         $this->load->model('mdishes');
         if ($data = $this->mdishes->load_dishes_by_store($store_id)) {
             $out['data'] = $data;
+        }
+        $this->output->set_content_type('application/json');
+        $this->output->set_output(json_encode($out));
+
+        return true;
+    }
+/*}}}*/
+/*{{{ syncDishImageInfo */
+    /**
+     * 提供接口供终端同步门店菜品图片信息
+     *
+     */
+    public function syncDishImageInfo() {
+        $in = array(
+            'serial' => $this->input->get_post('serialNumber'), 
+            'store' => $this->input->get_post('storeCode'), 
+        );
+
+        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
+            return false;
+        }
+
+        $out = array();
+        $out['status'] = 0;
+        $out['data'] = array();
+        $this->load->model('mdishes');
+        if ($data = $this->mdishes->load_image_by_store($store_id)) {
+            $out['data'] = $data;
+        }
+        $this->output->set_content_type('application/json');
+        $this->output->set_output(json_encode($out));
+
+        return true;
+    }
+/*}}}*/
+/*{{{ uploadUserBehaviorData */
+    /**
+      * 上传记录在iPad终端的用户行为数据。
+      *
+      */
+    public function uploadUserBehaviorData() {
+        $in = array(
+            'serial' => $this->input->get_post('serialNumber'), 
+            'store' => $this->input->get_post('storeCode'), 
+            'data' => $this->input->get_post('data'),
+        );
+
+        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
+            return false;
+        }
+
+        $out = array();
+        if (!$in['data'] = json_decode($in['data'], true)) {
+            $out['status'] = 1;
+            $out['msg'] = '系统开小差了。';
+        }
+
+        $out = array();
+        $out['status'] = 0;
+        $this->load->model('mbehavioraldata');
+        if ($data = $this->mbehavioraldata->insert($in['data'])) {
+            $out['msg'] = '上传成功。';
         }
         $this->output->set_content_type('application/json');
         $this->output->set_output(json_encode($out));

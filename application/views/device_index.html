@@ -1,0 +1,56 @@
+{% extends "site.html" %}
+
+{% block operate %}
+    <h3>设备一览</h3>
+    <div class="ma-block clearfix">
+    {{form_open('/store/index', 'class="form-inline"')|raw}}
+        <span class="label">所属门店</span>
+        {{form_dropdown("store-oid", param.store, search.STORE_OID)|raw}}
+        <span class="label">iPad序列号</span>
+        {{form_input("serl-nbr", search.SERL_NBR, 'placeholder="iPad序列号"')|raw}}
+        <span class="label">门店编码</span>
+        {{form_input("store-code", search.store-code, 'placeholder="门店编码"')|raw}}
+        <button type="submit" class="btn btn-primary">Go!</button>
+    </form>
+    </div>
+{% endblock %}
+
+{% block data %}
+<div class="ma-block clearfix">
+    <table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>设备序列号</th>
+            <th>是否启用</th>
+            <th>所属门店</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in device %}
+        <tr>
+            <td>{{loop.index + search.start}}</td>
+            <td><a href="{{site_url()}}/device/edit/{{item.SERL_NBR}}" title="编辑">{{item.SERL_NBR}}</a></td>
+            <td class="center">
+            {% if item.IS_ENABLED == constant('MA_ENABLE_Y') %}
+            <span class="label label-success">
+            {{option_value("enable", item.IS_ENABLED)}}
+            </span>
+            {% else %}
+            <span class="label">
+            {{option_value("enable", item.IS_ENABLED)}}
+            </span>
+            {% endif %}
+            </td>
+            <td>{{item.STORE_NAME}}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7"><em>查了半天，没有数据，不如添加一条吧.</em></td></tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    <a class="btn span2" href="{{site_url()}}/device/edit/0">新增</a>
+    {{pagination|raw}}
+</div>
+
+{% endblock %}

@@ -36,4 +36,96 @@ class MStore extends CI_Model {
     }
 /*}}}*/
 
+/*{{{ load_all */
+    private function _where($param) {
+        if (@$param['STORE_CODE']) {
+            $this->db->like('STORE_CODE', $param['STORE_CODE']);
+        }
+        if (@$param['STORE_NAME']) {
+            $this->db->like('STORE_NAME', $param['STORE_NAME']);
+        }
+        if (@$param['COMPANY_OID']) {
+            $this->db->where('COMPANY_OID', $param['COMPANY_OID']);
+        }
+    }
+    public function load_all_by_company($param, $cid) {
+        $param['COMPANY_OID'] = $cid;
+        // For search
+        $this->_where($param);
+        $this->db->select('COUNT(1) AS num');
+        $query = $this->db->get('STORE');
+
+        if ($num = $query->row(0)->num) {
+            $this->db->select();
+            $this->_where($param);
+            $query = $this->db->get('STORE', $param['per_page'], $param['start']);
+            $data = $query->result();
+
+            return array(
+                'num' => $num,
+                'data' => $data,
+            );
+        }
+
+        return false;
+    }
+/*}}}*/
+/*{{{ load */
+    public function load($id, $cid) {
+        $this->db->where('STORE_OID', $id);
+        $this->db->where('COMPANY_OID', $cid);
+        $this->db->where('STORE_STATUS <>', MA_STATUS_D);
+        // ADD logic param
+        $query = $this->db->get('STORE');
+        return $query->row();
+    }
+/*}}}*/
+/*{{{ save */
+    public function save($param, $id) {
+        if (!$id) {
+            $this->db->trans_start();
+            if (!$id = $this->lcommon->sequence('STORE_SEQ')) {
+                $this->db->trans_rollback();
+
+                return false;
+            }
+
+            $this->db->set('STORE_OID', $id);
+            $this->db->set('CRE_BY', $this->lsession->get('user')->USER_OID);
+            $this->db->set('CRE_DATE', 'now()', false);
+            $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
+            $this->db->set('UPD_DATE', 'now()', false);
+            if (!$this->db->insert('STORE', $param)) {
+                $this->db->trans_rollback();
+
+                return false;
+            }
+            $this->db->trans_complete();
+
+            return $id;
+        } else {
+            $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
+            $this->db->set('UPD_DATE', 'now()', false);
+            if ($this->db->update('STORE', $param, array('STORE_OID'=>$id))) {
+                return $id;
+            }
+        }
+
+        return false;
+    }
+/*}}}*/
+/*{{{ del */
+    public function del($id) {
+        // TODO delete relation table
+        $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
+        $this->db->set('UPD_DATE', 'now()', false);
+        $param['COMPANY_STATUS'] = MA_STATUS_D;
+        if ($this->db->update('COMPANY', $param, array('COMPANY_OID'=>$id))) {
+            return true;
+        }
+
+        return false;
+    }
+/*}}}*/
+
 }

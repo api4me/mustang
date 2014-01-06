@@ -1,0 +1,48 @@
+{% extends "site.html" %}
+
+{% block operate %}
+    <h3>门店一览</h3>
+    <div class="ma-block clearfix">
+    {{form_open('/store/index', 'class="form-inline"')|raw}}
+        <span class="label">门店名称</span>
+        {{form_input("store-name", search.STORE_NAME, 'placeholder="门店名称"')|raw}}
+        <span class="label">门店编码</span>
+        {{form_input("store-code", search.STORE_CODE, 'placeholder="门店编码"')|raw}}
+        <button type="submit" class="btn btn-primary">Go!</button>
+    </form>
+    </div>
+{% endblock %}
+
+{% block data %}
+<div class="ma-block clearfix">
+    <table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>名称</th>
+            <th>简称</th>
+            <th>编码</th>
+            <th>联系电话</th>
+            <th>联系人</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in store %}
+        <tr>
+            <td>{{loop.index + search.start}}</td>
+            <td><a href="{{site_url()}}/store/edit/{{item.STORE_OID}}" title="编辑">{{item.STORE_NAME}}</a></td>
+            <td>{{item.STORE_SRT_NAME}}</td>
+            <td>{{item.STORE_CODE}}</td>
+            <td>{{item.STORE_TEL}}</td>
+            <td>{{item.CTCT_PERS}}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7"><em>查了半天，没有数据，不如添加一条吧.</em></td></tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    <a class="btn span2" href="{{site_url()}}/store/edit/0">新增</a>
+    {{pagination|raw}}
+</div>
+
+{% endblock %}

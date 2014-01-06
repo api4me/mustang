@@ -69,7 +69,7 @@ $config['url_suffix'] = '';
 | than english.
 |
 */
-$config['language']	= 'english';
+$config['language']	= 'zh_CN';
 
 /*
 |--------------------------------------------------------------------------
@@ -106,7 +106,7 @@ $config['enable_hooks'] = TRUE;
 | http://codeigniter.com/user_guide/general/creating_libraries.html
 |
 */
-$config['subclass_prefix'] = 'Cub_';
+$config['subclass_prefix'] = 'Ma_';
 
 
 /*

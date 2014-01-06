@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class User extends CI_Controller {
+class User extends Ma_Controller {
 
 /*{{{ index */
 	/**
@@ -18,124 +18,88 @@ class User extends CI_Controller {
 	 * map to /index.php/article/<method_name>
 	 * @see http://codeigniter.com/user_guide/general/urls.html
 	 */
-	public function index() {
-        // Profile
-        $this->load->library("twig");
+	public function index($start = 0) {
+        $this->load->library('twig');
         $out = array();
-        $out['title'] = '我的中心';
-        $this->twig->display("user_index.html", $out);
-	}
-/*}}}*/
-/*{{{ buy */
-    public function buy($start = 0) {
-        $this->load->helper("form");
-        $this->load->library("twig");
-        $out = array();
-        $out["title"] = "我参与的竞拍";
+        $out['title'] = '用户管理';
 
-        $this->config->load("pagination");
-        $user = $this->lsession->get('user');
-        // Search
         $search = array();
-        $search["start"] = intval($start);
-        $search["per_page"] = 10;
-        $search['uid'] = $user->id;
-        $out["search"] = $search;
-        // Auction
-        $this->load->model("mauction");
-        if ($data = $this->mauction->load_for_buyer($search)) {
-            $out["buy"] = $data["data"];
+        if ($this->input->post()) {
+            $search['LOGIN_ID'] = $this->input->get_post('login-id');
+            $search['USER_TYPE'] = $this->input->get_post('user-type');
+            $search['USER_STATUS'] = $this->input->get_post('user-status');
+            $this->lsession->set('user_search', $search);
+        } else {
+            if ($tmp = $this->lsession->get('user_search')) {
+                $search = $tmp;
+            }
+        }
+        $this->config->load("pagination");
+        $search['start'] = $start;
+        $search["per_page"] = $this->config->item("per_page"); 
+        $out['search'] = $search;
+
+        $param = array();
+        $param['enable'] = $this->lcommon->form_option('enable');
+        $param['role'] = $this->lcommon->form_option('role');
+        $out['param'] = $param;
+
+        // The data of search
+        $this->load->model('muser');
+        if($data = $this->muser->load_all($search)) {
+            $out["users"] = $data["data"];
 
             // Pagaination
             $this->load->library("pagination");
             $this->pagination->uri_segment = 3;
-            $this->pagination->per_page = $search['per_page'];
             $this->pagination->total_rows = $data["num"];
-            $this->pagination->base_url = site_url() . "/user/buy/";
-            $this->pagination->full_tag_open = '<div class="pagination pagination-centered"><ul>'; 
+            $this->pagination->base_url = site_url() . "/user/index";
             $out["pagination"] = $this->pagination->create_links();
         }
 
-        $this->twig->display("user_buy.html", $out);
-    }
+        $this->twig->display('user_index.html', $out);
+	}
 /*}}}*/
-/*{{{ sell */
-    public function sell($id = 0) {
-        $this->load->helper("form");
-        $this->load->library("twig");
-        $out = array();
-        $out["title"] = "我的爱车";
-
+/*{{{ edit */
+    public function edit($id = 0) {
         $user = $this->lsession->get('user');
-        // Search
-        $search = array();
-        $search['car_id'] = $id;
-        $search['uid'] = $user->id;
-        $out["search"] = $search;
-        // Auction
-        $this->load->model("mauction");
-        if ($data = $this->mauction->load_for_sell($search)) {
-            $out["car"] = $data[0];
-            // Update saw num
-            if ($out['car']->status == 'success' && $out['car']->saw_num == 0) {
-                $this->load->model('mcar');
-                $param['saw_num'] = 1;
-                $this->mcar->save($param, $out['car']->id);
-            }
+        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
+            $this->index();
 
-            if (count($data) > 1) {
-                $out["next"] = $data[1];
-            }
+            return false;
         }
 
-        $this->twig->display("user_sell.html", $out);
-    }
-/*}}}*/
-/*{{{ pwd */
-	public function pwd() {
+        $this->load->library('twig');
         $out = array();
-        $this->output->set_content_type('application/json');
-        if (!$this->input->is_ajax_request()) {
-            $out["status"] = 1;
-            $out["msg"] = "系统忙，请稍后...";
-            $this->output->set_output(json_encode($out));
-
-            return false;
-        }
-
-        $this->load->model("muser");
-        $tmp = $this->lsession->get("user");
-        $user = $this->muser->load($tmp->id);
-        // Check
-        $p = $this->input->post("p");
-        $h = $this->input->post("h");
-        if (md5($user->pwd . $p) != $h) {
-            $out["status"] = 1;
-            $out["msg"] = "原密码不正确，请确认。";
-            $this->output->set_output(json_encode($out));
-
-            return false;
-        }
+        $out['title'] = '用户管理';
+        
         $param = array();
-        $param['pwd'] = md5($p);
-        if (!$ret = $this->muser->save($param, $user->id)) {
-            $out["status"] = 1;
-            $out["msg"] = "密码修改失败。";
-            $this->output->set_output(json_encode($out));
+        $this->load->model('mcompany');
+        $param['enable'] = $this->lcommon->form_option('enable');
+        $param['role'] = $this->lcommon->form_option('role');
+        $param['company'] = $this->lcommon->insert_blank($this->mcompany->load_for_choose());
+
+        $out['param'] = $param;
+
+        $this->load->model('muser');
+        if ($id) {
+            $out['user'] = $this->muser->load($id);
+        }
+        
+        $this->twig->display('user_edit.html', $out);
+
+        return true;
+    }
+/*}}}*/
+/*{{{ save */
+    public function save($id = 0) {
+        $user = $this->lsession->get('user');
+        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
+            $this->index();
 
             return false;
         }
 
-        // Success
-        $out["status"] = 0;
-        $out["msg"] = "密码修改成功。";
-        $this->output->set_output(json_encode($out));
-
-        return true;
-	}
-/*}}}*/
-/*{{{ top */
-	public function top($id) {
         $out = array();
         $this->output->set_content_type('application/json');
         if (!$this->input->is_ajax_request()) {
@@ -145,51 +109,140 @@ class User extends CI_Controller {
 
             return false;
         }
-        if (!$id || !is_numeric($id)) {
-            $out["status"] = 1;
-            $out["msg"] = "系统忙，请稍后...";
+
+        // Validate
+        $rules = array(
+            array('field' => 'user-name', 'label' => '姓名', 'rules' => 'trim|required'),
+            array('field' => 'login-id', 'label' => '登录号', 'rules' => 'trim|required'),
+            array('field' => 'user-type', 'label' => '用户类型', 'rules' => 'trim|required'),
+            array('field' => 'user-status', 'label' => '用户状态', 'rules' => 'trim|required'),
+        );
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules($rules);
+        if (!$this->form_validation->run()) {
+            $out['msg'] = $this->form_validation->error_string();
             $this->output->set_output(json_encode($out));
 
             return false;
         }
-        $user = $this->lsession->get('user');
-        if ($user->role != 'buyer') {
-            $out["status"] = 1;
-            $out["msg"] = "系统忙，请稍后...";
+
+        $param = array();
+        $param['USER_CODE'] = $this->input->post('user-code');
+        $param['USER_NAME'] = $this->input->post('user-name');
+        $param['OFFTEL'] = $this->input->post('offtel');
+        $param['MOBILE'] = $this->input->post('mobile');
+        $param['EMAIL'] = $this->input->post('email');
+        $param['LOGIN_ID'] = $this->input->post('login-id');
+        if ($this->input->post('login-pwd')) {
+            $param['LOGIN_PWD'] = $this->lcommon->encrypt_pwd($this->input->post('login-pwd'));
+        }
+        $param['USER_STATUS'] = $this->input->post('user-status');
+        $param['USER_TYPE'] = $this->input->post('user-type');
+        if ($param['USER_TYPE'] != MA_USER_TYPE_SUPER) {
+            $param['COMPANY_OID'] = $this->input->post('company');
+        }
+
+        $this->load->model('muser');
+        if ($cid = $this->muser->save($param, $id)) {
+            $out['status'] = 0;
+            $out['msg'] = '保存成功';
+            $out['id'] = $cid;
             $this->output->set_output(json_encode($out));
 
-            return false;
+            return true;
         }
 
-        // Success
-        $out["status"] = 0;
-        $this->load->model('mauction');
-        if ($tmp = $this->mauction->top($id)) {
-            $top = array();
-            $first = true;
-            foreach ($tmp['price'] as $k => $v) {
-                if ($first) {
-                    $first = false;
-                    if ($k != $user->username) {
-                        $v = str_repeat('*', strlen($v)); 
-                    }
-                }
-                if (strpos($v, '*') === false) {
-                    $v = number_format($v);
-                }
-                $a = $tmp['area'][$k];
-                if ($k != $user->username) {
-                    $k = substr($k, 0, 1) . str_repeat('*', strlen($k) - 2) . substr($k, -1);
-                }
-                $top[] = array('name' => $k, 'price' => $v, 'area' => $a);
-            }
-
-            $out['data'] = $top;
-        }
+        $out['status'] = 1;
+        $out['msg'] = '保存失败';
         $this->output->set_output(json_encode($out));
 
-        return true;
-	}
+        return false;
+    }
+/*}}}*/
+/*{{{ del */
+    public function del($id = 0) {
+        $user = $this->lsession->get('user');
+        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
+            $this->index();
+
+            return false;
+        }
+
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $param = array();
+
+        $this->load->model('mcompany');
+        if ($cid = $this->mcompany->del($id)) {
+            $out['status'] = 0;
+            $out['msg'] = '删除成功';
+            $out['id'] = $cid;
+            $this->output->set_output(json_encode($out));
+
+            return true;
+        }
+
+        $out['status'] = 1;
+        $out['msg'] = '删除失败';
+        $this->output->set_output(json_encode($out));
+
+        return false;
+    }
+/*}}}*/
+/*{{{ reset */
+    public function reset() {
+        $user = $this->lsession->get('user');
+        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
+            $this->index();
+
+            return false;
+        }
+
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $id = $this->input->post('id');
+        $pwd = $this->input->post('pwd');
+        if (!$id || !$pwd) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $param['LOGIN_PWD'] = $this->lcommon->encrypt_pwd($pwd);
+        $this->load->model('muser');
+        if ($cid = $this->muser->save($param, $id)) {
+            $out['status'] = 0;
+            $out['msg'] = '保存成功';
+            $out['id'] = $cid;
+            $this->output->set_output(json_encode($out));
+
+            return true;
+        }
+
+        $out['status'] = 1;
+        $out['msg'] = '保存失败';
+        $this->output->set_output(json_encode($out));
+
+        return false;
+    }
 /*}}}*/
 
 }

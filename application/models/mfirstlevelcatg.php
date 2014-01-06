@@ -14,7 +14,7 @@ class MFirstlevelcatg extends CI_Model {
 
 /*{{{ load_by_store */
     public function load_by_store($sid) {
-        $q = 'SELECT FLC_OID, FLC_CODE, FLC_NAME, FLC_DESCR, UPD_DATE FROM FIRST_LEVEL_CATG WHERE STORE_OID=?';
+        $q = 'SELECT FLC_OID, FLC_CODE, FLC_NAME, FLC_DESCR, DISP_SEQ, STORE_OID, UPD_DATE FROM FIRST_LEVEL_CATG WHERE STORE_OID=?';
         $query = $this->db->query($q, $sid);
 
         return $query->result();

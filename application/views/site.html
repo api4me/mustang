@@ -8,15 +8,7 @@
     <link rel="shortcut icon" href="{{base_url()}}assets/img/favicon.png">
     <!-- Le styles -->
     <link href="{{base_url()}}assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{base_url()}}assets/css/site.css?t=20140108" rel="stylesheet">
-    <!--[if lt IE 9]>
-        <script src="{{base_url()}}assets/js/html5shiv.js"></script>
-    <![endif]-->
-    <script src="{{base_url()}}assets/js/jquery.min.js"></script>
-    <script src="{{base_url()}}assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="{{base_url()}}assets/js/jquery.countdown.min.js"></script>
-    <script src="{{base_url()}}assets/js/md5.js"></script>
-    <script src="{{base_url()}}assets/js/site.min.js?t=20140108"></script>
+    <link href="{{base_url()}}assets/css/site.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -24,20 +16,20 @@
         <div class="navbar-inner">
             <div class="container">
                 <div class="nav-collapse collapse">
+                    {% set s_user = session_value("user") %}
+                    {% set route = get_route() %}
+                    {% if s_user.USER_TYPE == constant('MA_USER_TYPE_SUPER') and route.class != 'home' %}
+                        <a class="brand" href="{{site_url()}}" title="返回公司选择页"><i class="icon-home icon-white"></i> &nbsp;</a>                    
+                        {% set com = session_value('company') %}
+                        <ul class="nav">
+                            <li><a>{{ com.COMPANY_NAME }}</a></li>
+                        </ul>
+                    {% endif %}
                     <ul class="nav pull-right">
-                        {% set user = session_value("user") %}
-                        {% if not user %}
+                        {% if not s_user %}
                         <li><a href="{{site_url()}}/login/"><i class="icon-user icon-white"></i> 登录</a></li>
                         {% else %}
-                        <li><a href="{{site_url()}}/user">您好, {{user.name}}</a></li>
-                        {% if user.role == 'buyer' %}
-                        <li><a href="{{site_url()}}/user/buy">我的交易</a></li>
-                        {% elseif user.role == 'sell' %}
-                        <li><a href="{{site_url()}}/user/sell">我的交易</a></li>
-                        {% endif %}
-                        {%if user.role in ["admin", "super", "leader", "appraiser", "waiter"] %}
-                        <li><a href="{{site_url()}}/admin/">管理</a></li>
-                        {% endif %}
+                        <li><a href="{{site_url()}}/owner">您好, {{s_user.USER_NAME}}</a></li>
                         <li><a href="{{site_url()}}/logout/" title="退出" alt="退出"><i class="icon-off icon-white"></i> &nbsp;</a></li>
                         {% endif %}
                     </ul>
@@ -54,37 +46,40 @@
     </div>
     {% endblock %}
 
-    {% block menu %}
-    {% if user %}
-    <div id="menu" class="container nav nav-stacked">
-        <div class="navbar-inner">
-            <ul class="nav">
-                {% set route = get_route() %}
-                {% if user.role == 'super' %}
-                <li {% if route.class == 'home' %} class="active" {% endif %}><a href="{{base_url()}}">首页</a></li>
-                <li class="divider-vertical"></li>
-                <li {% if route.class == 'sale' %} class="active" {% endif %}><a href="{{site_url()}}/sale/">用户管理</a></li>
-                <li class="divider-vertical"></li>
-                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">公司管理</a></li>
-                <li class="divider-vertical"></li>
-                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">门店管理</a></li>
-                <li class="divider-vertical"></li>
-                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">iPad设备管理</a></li>
-                <li class="divider-vertical"></li>
-                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">一级分类管理</a></li>
-                <li class="divider-vertical"></li>
-                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">二级分类管理</a></li>
-                <li class="divider-vertical"></li>
-                <li {% if route.class == 'buy' %} class="active" {% endif %}><a href="{{site_url()}}/buy/">菜品管理</a></li>
-                {% else %}
+    {% block container %}
+        <div class="container">
+            <div class="row">
+                <div class="span3">
+                {% block menu %}
+                {% if s_user %}
+                    <ul class="nav nav-list sidenav affix">
+                    {% if s_user.USER_TYPE == constant('MA_USER_TYPE_SUPER') %}
+                        <li {% if route.class == 'user' %} class="active" {% endif %}><a href="{{site_url()}}/user/">用户管理</a></li>
+                        <li {% if route.class == 'store' %} class="active" {% endif %}><a href="{{site_url()}}/store/">门店管理</a></li>
+                        <li {% if route.class == 'device' %} class="active" {% endif %}><a href="{{site_url()}}/device/">iPad设备管理</a></li>
+                        <li {% if route.class == 'first' %} class="active" {% endif %}><a href="{{site_url()}}/first/">一级分类管理</a></li>
+                        <li {% if route.class == 'second' %} class="active" {% endif %}><a href="{{site_url()}}/second/">二级分类管理</a></li>
+                        <li {% if route.class == 'dishes' %} class="active" {% endif %}><a href="{{site_url()}}/dishes/">菜品管理</a></li>
+                    {% else %}
+                        <li {% if route.class == 'store' %} class="active" {% endif %}><a href="{{site_url()}}/store/">门店管理</a></li>
+                        <li {% if route.class == 'device' %} class="active" {% endif %}><a href="{{site_url()}}/device/">iPad设备管理</a></li>
+                        <li {% if route.class == 'first' %} class="active" {% endif %}><a href="{{site_url()}}/first/">一级分类管理</a></li>
+                        <li {% if route.class == 'second' %} class="active" {% endif %}><a href="{{site_url()}}/second/">二级分类管理</a></li>
+                        <li {% if route.class == 'dishes' %} class="active" {% endif %}><a href="{{site_url()}}/dishes/">菜品管理</a></li>
+                    {% endif %}
+                    </ul>
                 {% endif %}
-            </ul>
-        </div>
-    </div>
-    {% endif %}
-    {% endblock %}
+                {% endblock %}
+                </div>
 
-    {% block data %}
+                <div class="span9">
+                {% block operate %}
+                {% endblock %}
+                {% block data %}
+                {% endblock %}
+                </div>
+            </div>
+        </div>
     {% endblock %}
 
 {% endblock %}
@@ -97,4 +92,15 @@
         </p>
     </div>
 </footer>
+
+<script src="{{base_url()}}assets/js/sea.js"></script>
+<script>
+seajs.config({
+    base: "{{base_url()}}assets/",
+    alias: {
+        "jquery": "js/lib/jquery.min.js"
+    }
+});
+seajs.use("js/main");
+</script>
 {% endblock %}

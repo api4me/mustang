@@ -1,0 +1,153 @@
+{% extends "site.html" %}
+
+{% block data %}
+<div id="user-edit">
+        {% if user.USER_OID %}
+        <h3>用户管理：{{ user.USER_NAME }}</h3>
+        {% else %}
+        <h3>新增用户</h3>
+        {% endif %}
+
+        <div class="ma-block clearfix">
+        <p id="msg"></p>
+        {{form_open('/user/save/' ~ user.USER_OID, 'class="form-horizontal"')|raw}}
+        <em><i class="icon-star-empty"></i> 为必填项</em>
+        <div class="control-group">
+            <label class="control-label" for="inputCode">编码</label>
+            <div class="controls">
+                {{form_input('user-code', user.USER_CODE, 'id="inputCode"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputName">姓名</label> 
+            <div class="controls">
+                {{form_input('user-name', user.USER_NAME, 'id="inputName"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputLoginId">登录号</label>
+            <div class="controls">
+                {{form_input('login-id', user.LOGIN_ID, 'id="inputLoginId"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputLoginPwd">密码</label>
+            <div class="controls">
+                {% if user.USER_OID %}
+                <span class="input-medium uneditable-input">********</span>
+                <a href="#reset-pwd-modal" role="button" class="btn btn-info" data-toggle="modal">重置密码</a>
+                {% else %}
+                {{form_password('login-pwd', '', 'id="inputLoginPwd"')|raw}}
+                <i class="icon-star-empty"></i>
+                {% endif %}
+            </div>
+        </div>
+        {% if not user.USER_OID %}
+        <div class="control-group">
+            <label class="control-label" for="inputLoginPwd2">重复密码</label>
+            <div class="controls">
+                {{form_password('login-pwd2', '', 'id="inputLoginPwd2"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        {% endif %}
+        <div class="control-group">
+            <label class="control-label" for="inputUserType">用户类型</label>
+            <div class="controls">
+                {{form_dropdown('user-type', param.role, user.USER_TYPE, 'id="inputUserType"')|raw}} 
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputCompany">所属公司</label>
+            <div class="controls">
+                {{form_dropdown('company', param.company, user.COMPANY_OID, 'id="inputCompany"')|raw}}
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="inputOffTel">办公电话</label>
+            <div class="controls">
+                {{form_input('offtel', user.OFFTEL, 'id="inputOffTel"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputMobile">手机号</label>
+            <div class="controls">
+                {{form_input('mobile', user.MOBILE, 'id="inputMobile"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputEmail">电子邮件</label>
+            <div class="controls">
+                {{form_input('email', user.EMAIL, 'id="inputEmail"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputUserStatus">用户状态</label>
+            <div class="controls">
+                {{form_dropdown('user-status', param.enable, user.USER_STATUS, 'id="inputUserStatus"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+
+        {% if user.USER_OID %}
+        <div class="control-group">
+            <label class="control-label" for="inputCreated">创建时间</label>
+            <div class="controls">
+                <span class="input-medium uneditable-input">{{user.CRE_DATE}}</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputUpdated">更新时间</label>
+            <div class="controls">
+                <span class="input-medium uneditable-input">{{user.UPD_DATE}}</span>
+            </div>
+        </div>
+        {% endif %}
+        <div class="control-group">
+            <div class="controls">
+                {{form_submit('save', '保存', 'class="btn btn-primary"')|raw}}
+                <a href="{{site_url()}}/user/">返回</a>
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{{user.USER_OID}}" />
+
+        {% if user.USER_OID %}
+        <!-- Modal Reset-PWD -->
+        <div id="reset-pwd-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">重置密码</h3>
+        </div>
+        <div class="modal-body container">
+            <div id="modal-msg"></div>
+            <div class="control-group">
+                <label class="control-label" for="inputResetPwd">密码</label>
+                <div class="controls">
+                    <div class="input-append">
+                        {{form_password("login-pwd", '', 'id="inputResetPwd"')|raw}}                                                                                           
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputResetPwd2">重复密码</label>
+                <div class="controls">
+                    <div class="input-append">
+                        {{form_password("login-pwd2", '', 'id="inputResetPwd2"')|raw}}                                                                                           
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            {{form_button('reset-pwd', '确定', 'class="btn btn-primary"')|raw}}
+            {{form_button('close', '关闭', 'class="btn" data-dismiss="modal" aria-hidden="true"')|raw}}
+        </div>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

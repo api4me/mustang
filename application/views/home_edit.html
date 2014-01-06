@@ -1,0 +1,123 @@
+{% extends "site.html" %}
+
+{% block container %}
+<div class="container" id="home-edit">
+        {% if company.COMPANY_OID %}
+        <h3>公司管理：{{company.COMPANY_NAME}}</h3>
+        {% else %}
+        <h3>新增公司</h3>
+        {% endif %}
+
+        <div class="ma-block clearfix">
+        <p id="msg"></p>
+        {{form_open('/home/save/' ~ company.COMPANY_OID, 'class="form-horizontal"')|raw}}
+        <div class="control-group">
+            <label class="control-label" for="inputCode">编码</label>
+            <div class="controls">
+                {{form_input('company-code', company.COMPANY_CODE, 'id="inputCode"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputName">名称</label>
+            <div class="controls">
+                {{form_input('company-name', company.COMPANY_NAME, 'id="inputName"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputShortName">简称</label>
+            <div class="controls">
+                {{form_input('company-srt-name', company.COMPANY_SRT_NAME, 'id="inputShortName"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputDescr">描述</label>
+            <div class="controls">
+                {{form_textarea('company-descr', company.COMPANY_DESCR, 'id="inputDescr"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputTel">电话</label>
+            <div class="controls">
+                {{form_input('company-tel', company.COMPANY_TEL, 'id="inputTel"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputPstlCode">邮编</label>
+            <div class="controls">
+                {{form_input('company-pstl-code', company.COMPANY_PSTL_CODE, 'id="inputPstlCode"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputAddr1">地址1</label>
+            <div class="controls">
+                {{form_input('company-addr1', company.COMPANY_ADDR1, 'id="inputAddr1"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputAddr2">地址2</label>
+            <div class="controls">
+                {{form_input('company-addr2', company.COMPANY_ADDR2, 'id="inputAddr2"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputAddr3">地址3</label>
+            <div class="controls">
+                {{form_input('company-addr3', company.COMPANY_ADDR3, 'id="inputAddr3"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputAddr4">地址4</label>
+            <div class="controls">
+                {{form_input('company-addr4', company.COMPANY_ADDR4, 'id="inputAddr4"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputCtctPers">联系人</label>
+            <div class="controls">
+                {{form_input('ctct-pers', company.CTCT_PERS, 'id="inputCtctPers"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputCtctTel">联系电话</label>
+            <div class="controls">
+                {{form_input('ctct-tel', company.CTCT_TEL, 'id="inputCtctTel"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputCtctMobile">移动电话</label>
+            <div class="controls">
+                {{form_input('ctct-mobile', company.CTCT_MOBILE, 'id="inputCtctMobile"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputCtctEmail">电子邮件</label>
+            <div class="controls">
+                {{form_input('ctct-email', company.CTCT_EMAIL, 'id="inputCtctEmail"')|raw}}
+            </div>
+        </div>
+
+        {% if company.COMPANY_OID %}
+        <div class="control-group">
+            <label class="control-label" for="inputCreated">创建时间</label>
+            <div class="controls">
+                <span class="input-medium uneditable-input">{{company.CRE_DATE}}</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputUpdated">更新时间</label>
+            <div class="controls">
+                <span class="input-medium uneditable-input">{{company.UPD_DATE}}</span>
+            </div>
+        </div>
+        {% endif %}
+        <div class="control-group">
+            <div class="controls">
+                {{form_submit('save', '保存', 'class="btn btn-primary"')|raw}}
+                <a href="{{site_url()}}/home/">返回</a>
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{{company.COMPANY_OID}}" />
+    </div>
+
+</div>
+{% endblock %}

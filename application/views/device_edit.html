@@ -1,0 +1,116 @@
+{% extends "site.html" %}
+
+{% block data %}
+<div id="store-edit">
+        {% if store.STORE_OID %}
+        <h3>门店管理：{{ store.STORE_NAME }}</h3>
+        {% else %}
+        <h3>新增门店</h3>
+        {% endif %}
+
+        <div class="ma-block clearfix">
+        <p id="msg"></p>
+        {{form_open('/store/save/' ~ store.STORE_OID, 'class="form-horizontal"')|raw}}
+        <em><i class="icon-star-empty"></i> 为必填项</em>
+        <div class="control-group">
+            <label class="control-label" for="inputCode">编码</label>
+            <div class="controls">
+                {{form_input('store-code', store.STORE_CODE, 'id="inputCode"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputName">名称</label> 
+            <div class="controls">
+                {{form_input('store-name', store.STORE_NAME, 'id="inputName"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputSrtName">简称</label> 
+            <div class="controls">
+                {{form_input('store-srt-name', store.STORE_SRT_NAME, 'id="inputSrtName"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputDescr">描述</label>
+            <div class="controls">
+                {{form_textarea('store-descr', store.STORE_DESCR, 'id="inputDescr"')|raw}}
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="inputStoreTel">电话</label>
+            <div class="controls">
+                {{form_input('store-tel', store.STORE_TEL, 'id="inputStoreTel"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputFax">传真</label>
+            <div class="controls">
+                {{form_input('store-fax', store.STORE_FAX, 'id="inputFax"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputPstlCode">邮编</label>
+            <div class="controls">
+                {{form_input('store-pstl-code', store.STORE_PSTL_CODE, 'id="inputPstlCode"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputAddr1">地址1</label>
+            <div class="controls">
+                {{form_input('store-addr1', store.STORE_ADDR1, 'id="inputAddr1"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputAddr1">地址2</label>
+            <div class="controls">
+                {{form_input('store-addr2', store.STORE_ADDR2, 'id="inputAddr2"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputAddr3">地址3</label>
+            <div class="controls">
+                {{form_input('store-addr3', store.STORE_ADDR3, 'id="inputAddr3"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputAddr4">地址4</label>
+            <div class="controls">
+                {{form_input('store-addr4', store.STORE_ADDR4, 'id="inputAddr4"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputCtctPers">联系人</label>
+            <div class="controls">
+                {{form_input('ctct-pers', store.CTCT_PERS, 'id="inputCtctPers"')|raw}}
+            </div>
+        </div>
+
+        {% if store.STORE_OID %}
+        <div class="control-group">
+            <label class="control-label" for="inputCreated">创建时间</label>
+            <div class="controls">
+                <span class="input-medium uneditable-input">{{store.CRE_DATE}}</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputUpdated">更新时间</label>
+            <div class="controls">
+                <span class="input-medium uneditable-input">{{store.UPD_DATE}}</span>
+            </div>
+        </div>
+        {% endif %}
+        <div class="control-group">
+            <div class="controls">
+                {{form_submit('save', '保存', 'class="btn btn-primary"')|raw}}
+                <a href="{{site_url()}}/store/">返回</a>
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{{store.STORE_OID}}" />
+
+    </div>
+
+</div>
+{% endblock %}
