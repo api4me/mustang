@@ -11,7 +11,7 @@
         <div class="ma-block clearfix">
         <p id="msg"></p>
         {{form_open('/store/save/' ~ store.STORE_OID, 'class="form-horizontal"')|raw}}
-        <em><i class="icon-star-empty"></i> 为必填项</em>
+        <div class="text-right"><em><i class="icon-star-empty"></i> 为必填项</em></div>
         <div class="control-group">
             <label class="control-label" for="inputCode">编码</label>
             <div class="controls">
@@ -33,9 +33,9 @@
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label" for="inputDescr">描述</label>
+            <label class="control-label" for="inputContent">描述</label>
             <div class="controls">
-                {{form_textarea('store-descr', store.STORE_DESCR, 'id="inputDescr"')|raw}}
+                {{form_textarea('store-descr', store.STORE_DESCR, 'id="inputContent"')|raw}}
             </div>
         </div>
 

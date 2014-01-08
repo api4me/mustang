@@ -5,5 +5,7 @@ define(function(require){
         seajs.use('js/lib/html5shiv');
     }
     seajs.use('bootstrap/js/bootstrap.min');
+    seajs.use('editor/ckeditor.js');
+    seajs.use('editor/ckfinder/ckfinder.js');
     seajs.use('js/site.min');
 });

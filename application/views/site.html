@@ -54,18 +54,19 @@
                 {% if s_user %}
                     <ul class="nav nav-list sidenav affix">
                     {% if s_user.USER_TYPE == constant('MA_USER_TYPE_SUPER') %}
-                        <li {% if route.class == 'user' %} class="active" {% endif %}><a href="{{site_url()}}/user/">用户管理</a></li>
-                        <li {% if route.class == 'store' %} class="active" {% endif %}><a href="{{site_url()}}/store/">门店管理</a></li>
-                        <li {% if route.class == 'device' %} class="active" {% endif %}><a href="{{site_url()}}/device/">iPad设备管理</a></li>
-                        <li {% if route.class == 'first' %} class="active" {% endif %}><a href="{{site_url()}}/first/">一级分类管理</a></li>
-                        <li {% if route.class == 'second' %} class="active" {% endif %}><a href="{{site_url()}}/second/">二级分类管理</a></li>
-                        <li {% if route.class == 'dishes' %} class="active" {% endif %}><a href="{{site_url()}}/dishes/">菜品管理</a></li>
+                        <li {% if route.class == 'user' %} class="active" {% endif %}><a href="{{site_url()}}user/">用户管理</a></li>
+                        <li {% if route.class == 'param' %} class="active" {% endif %}><a href="{{site_url()}}param/">系统参数管理</a></li>
+                        <li {% if route.class == 'store' %} class="active" {% endif %}><a href="{{site_url()}}store/">门店管理</a></li>
+                        <li {% if route.class == 'device' %} class="active" {% endif %}><a href="{{site_url()}}device/">iPad设备管理</a></li>
+                        <li {% if route.class == 'first' %} class="active" {% endif %}><a href="{{site_url()}}first/">一级分类管理</a></li>
+                        <li {% if route.class == 'second' %} class="active" {% endif %}><a href="{{site_url()}}second/">二级分类管理</a></li>
+                        <li {% if route.class == 'dish' %} class="active" {% endif %}><a href="{{site_url()}}dish/">菜品管理</a></li>
                     {% else %}
-                        <li {% if route.class == 'store' %} class="active" {% endif %}><a href="{{site_url()}}/store/">门店管理</a></li>
-                        <li {% if route.class == 'device' %} class="active" {% endif %}><a href="{{site_url()}}/device/">iPad设备管理</a></li>
-                        <li {% if route.class == 'first' %} class="active" {% endif %}><a href="{{site_url()}}/first/">一级分类管理</a></li>
-                        <li {% if route.class == 'second' %} class="active" {% endif %}><a href="{{site_url()}}/second/">二级分类管理</a></li>
-                        <li {% if route.class == 'dishes' %} class="active" {% endif %}><a href="{{site_url()}}/dishes/">菜品管理</a></li>
+                        <li {% if route.class == 'store' %} class="active" {% endif %}><a href="{{site_url()}}store/">门店管理</a></li>
+                        <li {% if route.class == 'device' %} class="active" {% endif %}><a href="{{site_url()}}device/">iPad设备管理</a></li>
+                        <li {% if route.class == 'first' %} class="active" {% endif %}><a href="{{site_url()}}first/">一级分类管理</a></li>
+                        <li {% if route.class == 'second' %} class="active" {% endif %}><a href="{{site_url()}}second/">二级分类管理</a></li>
+                        <li {% if route.class == 'dish' %} class="active" {% endif %}><a href="{{site_url()}}dish/">菜品管理</a></li>
                     {% endif %}
                     </ul>
                 {% endif %}

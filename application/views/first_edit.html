@@ -1,0 +1,59 @@
+{% extends "site.html" %}
+
+{% block data %}
+<div id="first-edit">
+        {% if first.FLC_OID %}
+        <h3>一级分类管理：{{ first.FLC_NAME }}</h3>
+        {% else %}
+        <h3>新增一级分类</h3>
+        {% endif %}
+
+        <div class="ma-block clearfix">
+        <p id="msg"></p>
+        {{form_open('/first/save/' ~ first.FLC_OID, 'class="form-horizontal"')|raw}}
+        <div class="text-right"><em><i class="icon-star-empty"></i> 为必填项</em></div>
+        <div class="control-group">
+            <label class="control-label" for="inputFlcName">分类名</label>
+            <div class="controls">
+                {{form_input('flc-name', first.FLC_NAME, 'id="inputFlcName"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputFlcCode">分类编码</label>
+            <div class="controls">
+                {{form_input('flc-code', first.FLC_CODE, 'id="inputFlcCode"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputContent">描述</label>
+            <div class="controls">
+                {{form_textarea('flc-descr', first.FLC_DESCR, 'id="inputContent"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputDispSeq">展示顺序</label>
+            <div class="controls">
+                {{form_input('disp-seq', first.DISP_SEQ, 'id="inputDispSeq"')|raw}}
+                <span class="label">数值型，越小排在越前</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputStore">所属门店</label> <div class="controls">
+                {{form_dropdown('store-oid', param.store, first.STORE_OID, 'id="inputStore"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                {{form_submit('save', '保存', 'class="btn btn-primary"')|raw}}
+                <a href="{{site_url()}}first/">返回</a>
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{{first.FLC_OID}}" />
+
+    </div>
+
+</div>
+{% endblock %}

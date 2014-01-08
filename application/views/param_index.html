@@ -1,0 +1,42 @@
+{% extends "site.html" %}
+
+{% block operate %}
+    <h3>系统参数一览</h3>
+    <div class="ma-block clearfix">
+    {{form_open('/param/index', 'class="form-inline"')|raw}}
+        <span class="label">参数编码</span>
+        {{form_input("param-code", search.PARAM_CODE, 'class="input-small" placeholder="参数编码"')|raw}}
+        <button type="submit" class="btn btn-primary">Go!</button>
+    </form>
+    </div>
+{% endblock %}
+
+{% block data %}
+<div class="ma-block clearfix">
+    <table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>参数编码</th>
+            <th>值</th>
+            <th>说明</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in param %}
+        <tr>
+            <td>{{loop.index + search.start}}</td>
+            <td><a href="{{site_url()}}param/edit/{{item.PARAM_OID}}" title="编辑">{{item.PARAM_CODE}}</a></td>
+            <td>{{item.STRING_VALUE}} </td>
+            <td>{{item.PARAM_DESCR}}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="4"><em>查了半天，没有数据，不如添加一条吧.</em></td></tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    <a class="btn span2" href="{{site_url()}}param/edit/0">新增</a>
+    {{pagination|raw}}
+</div>
+
+{% endblock %}

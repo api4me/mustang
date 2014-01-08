@@ -65,7 +65,7 @@ Examples:
 ATTENTION: The trailing slash is required.
 */
 // TODO
-$baseUrl = '/cub/assets/upload/img/';
+$baseUrl = '/assets/upload/img/';
 
 /*
 $baseDir : the path to the local directory (in the server) which points to the

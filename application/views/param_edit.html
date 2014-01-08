@@ -1,0 +1,46 @@
+{% extends "site.html" %}
+
+{% block data %}
+<div id="param-edit">
+        {% if param.PARAM_OID %}
+        <h3>参数管理：{{ param.PARAM_CODE }}</h3>
+        {% else %}
+        <h3>新增参数</h3>
+        {% endif %}
+
+        <div class="ma-block clearfix">
+        <p id="msg"></p>
+        {{form_open('/param/save/' ~ param.PARAM_OID, 'class="form-horizontal"')|raw}}
+        <div class="text-right"><em><i class="icon-star-empty"></i> 为必填项</em></div>
+        <div class="control-group">
+            <label class="control-label" for="inputParamCode">参数编码</label>
+            <div class="controls">
+                {{form_input('param-code', param.PARAM_CODE, 'id="inputParamCode"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputStringValue">值</label>
+            <div class="controls">
+                {{form_input('string-value', param.STRING_VALUE, 'id="inputStringValue"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputParamDescr">说明</label>
+            <div class="controls">
+                {{form_textarea('param-descr', param.PARAM_DESCR, 'id="inputParamDescr"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                {{form_submit('save', '保存', 'class="btn btn-primary"')|raw}}
+                <a href="{{site_url()}}param/">返回</a>
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{{param.PARAM_OID}}" />
+        </form>
+    </div>
+
+</div>
+{% endblock %}

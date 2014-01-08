@@ -18,13 +18,17 @@ class Api extends CI_Controller {
         $this->output->set_output(json_encode($out));
     }
 /*}}}*/
-/*{{{ validate*/
-    private function validate($serial, $store) {
-        $this->load->model('mtrmlequip');
-        if ($data = $this->mtrmlequip->load_by_serial($serial)) {
-            if ($data->STORE_CODE == $store) {
-                return $data->STORE_OID;
-            }
+/*{{{ storeId */
+    private function storeId() {
+        if (func_num_args() > 0) {
+            $code = func_get_arg(0);
+        } else {
+            $code = $this->input->get_post('storeCode');
+        }
+
+        $this->load->model('mstore');
+        if ($data = $this->mstore->load_by_code($code)) {
+            return $data->STORE_OID;
         }
 
         $out = array();
@@ -39,7 +43,24 @@ class Api extends CI_Controller {
 /*}}}*/
 /*{{{ getMappedStoreInfo */
     public function getMappedStoreInfo() {
-        $this->syncStoreInfo();
+        $serial = $this->input->get_post('serialNumber');
+
+        $out = array();
+        $this->output->set_content_type('application/json');
+        $this->load->model('mtrmlequip');
+        if (!$data = $this->mtrmlequip->load_by_serial($serial)) {
+            $out['status'] = 1;
+            $out['msg'] = '暂时不能访问系统，请联系管理员。';
+
+            $this->output->set_output(json_encode($out));
+            return false;
+        }
+
+        $out['status'] = 0;
+        $out['data'] = $data;
+        $this->output->set_output(json_encode($out));
+
+        return true;
     }
 /*}}}*/
 /*{{{ syncDishesInfo */
@@ -48,12 +69,7 @@ class Api extends CI_Controller {
      *
      */
     public function syncDishesInfo() {
-        $in = array(
-            'serial' => $this->input->get_post('serialNumber'), 
-            'store' => $this->input->get_post('storeCode'), 
-        );
-
-        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
+        if (!$store_id = $this->storeId()) {
             return false;
         }
 
@@ -76,20 +92,13 @@ class Api extends CI_Controller {
      *
      */
     public function updateSystemParamSetupInfo() {
-        $in = array(
-            'serial' => $this->input->get_post('serialNumber'), 
-            'store' => $this->input->get_post('storeCode'), 
-        );
-
-        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
-            return false;
-        }
+        $code = $this->input->get_post('companyCode');
 
         $out = array();
         $out['status'] = 0;
         $out['data'] = array();
         $this->load->model('mctrlparam');
-        if ($data = $this->mctrlparam->load_by_store($store_id)) {
+        if ($data = $this->mctrlparam->load_by_company($code)) {
             $out['data'] = $data;
         }
         $this->output->set_content_type('application/json');
@@ -104,12 +113,7 @@ class Api extends CI_Controller {
      *
      */
     public function syncFirstLevelCategoryInfo() {
-        $in = array(
-            'serial' => $this->input->get_post('serialNumber'), 
-            'store' => $this->input->get_post('storeCode'), 
-        );
-
-        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
+        if (!$store_id = $this->storeId()) {
             return false;
         }
 
@@ -132,12 +136,7 @@ class Api extends CI_Controller {
      *
      */
     public function syncSecondLevelCategoryInfo() {
-        $in = array(
-            'serial' => $this->input->get_post('serialNumber'), 
-            'store' => $this->input->get_post('storeCode'), 
-        );
-
-        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
+        if (!$store_id = $this->storeId()) {
             return false;
         }
 
@@ -160,12 +159,7 @@ class Api extends CI_Controller {
      *
      */
     public function syncCompanyInfo() {
-        $in = array(
-            'serial' => $this->input->get_post('serialNumber'), 
-            'store' => $this->input->get_post('storeCode'), 
-        );
-
-        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
+        if (!$store_id = $this->storeId()) {
             return false;
         }
 
@@ -188,20 +182,13 @@ class Api extends CI_Controller {
      *
      */
     public function syncStoreInfo() {
-        $in = array(
-            'serial' => $this->input->get_post('serialNumber'), 
-            'store' => $this->input->get_post('storeCode'), 
-        );
-
-        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
-            return false;
-        }
+        $code = $this->input->get_post('storeCode');
 
         $out = array();
         $out['status'] = 0;
         $out['data'] = array();
         $this->load->model('mstore');
-        if ($data = $this->mstore->load_by_store($store_id)) {
+        if ($data = $this->mstore->load_by_code($code)) {
             $out['data'] = $data;
         }
         $this->output->set_content_type('application/json');
@@ -216,12 +203,7 @@ class Api extends CI_Controller {
      *
      */
     public function syncDishesAndSecLvlCateInfo() {
-        $in = array(
-            'serial' => $this->input->get_post('serialNumber'), 
-            'store' => $this->input->get_post('storeCode'), 
-        );
-
-        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
+        if (!$store_id = $this->storeId()) {
             return false;
         }
 
@@ -244,12 +226,7 @@ class Api extends CI_Controller {
      *
      */
     public function syncStoreAndDishesInfo() {
-        $in = array(
-            'serial' => $this->input->get_post('serialNumber'), 
-            'store' => $this->input->get_post('storeCode'), 
-        );
-
-        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
+        if (!$store_id = $this->storeId()) {
             return false;
         }
 
@@ -272,12 +249,7 @@ class Api extends CI_Controller {
      *
      */
     public function syncDishImageInfo() {
-        $in = array(
-            'serial' => $this->input->get_post('serialNumber'), 
-            'store' => $this->input->get_post('storeCode'), 
-        );
-
-        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
+        if (!$store_id = $this->storeId()) {
             return false;
         }
 
@@ -300,29 +272,29 @@ class Api extends CI_Controller {
       *
       */
     public function uploadUserBehaviorData() {
-        $in = array(
-            'serial' => $this->input->get_post('serialNumber'), 
-            'store' => $this->input->get_post('storeCode'), 
-            'data' => $this->input->get_post('data'),
-        );
-
-        if (!$store_id = $this->validate($in['serial'], $in['store'])) {
+        if (!$store_id = $this->storeId()) {
             return false;
         }
 
+        $in = array(
+            'data' => $this->input->get_post('data'),
+        );
+
         $out = array();
+        $this->output->set_content_type('application/json');
         if (!$in['data'] = json_decode($in['data'], true)) {
             $out['status'] = 1;
             $out['msg'] = '系统开小差了。';
+            $this->output->set_output(json_encode($out));
+
+            return false;
         }
 
-        $out = array();
         $out['status'] = 0;
         $this->load->model('mbehavioraldata');
         if ($data = $this->mbehavioraldata->insert($in['data'])) {
             $out['msg'] = '上传成功。';
         }
-        $this->output->set_content_type('application/json');
         $this->output->set_output(json_encode($out));
 
         return true;

@@ -152,6 +152,19 @@ class Home extends Ma_Controller {
         return false;
     }
 /*}}}*/
+/*{{{ _check_code */
+    public function _check_code($str) {
+        $this->load->model('mcompany');
+        $id = $this->input->get_post('id');
+        if (!$this->mcompany->not_exists($str, $id)) {
+            $this->form_validation->set_message(__FUNCTION__, '编码 已经存在，请换一个。');
+
+            return false;
+        }
+
+        return true;
+    }
+/*}}}*/
 /*{{{ del */
     public function del($id = 0) {
         $user = $this->lsession->get('user');

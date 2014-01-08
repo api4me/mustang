@@ -16,6 +16,12 @@ $config['enable'] = array(
     MA_ENABLE_N => '停用',
 );
 
+// Yes No
+$config['yesno'] = array(
+    MA_ENABLE_Y => '是',
+    MA_ENABLE_N => '否',
+);
+
 // User type
 $config['role'] = array(
     MA_USER_TYPE_SUPER => '超级管理员',

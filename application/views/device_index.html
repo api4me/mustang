@@ -3,13 +3,13 @@
 {% block operate %}
     <h3>设备一览</h3>
     <div class="ma-block clearfix">
-    {{form_open('/store/index', 'class="form-inline"')|raw}}
+    {{form_open('/device/index', 'class="form-inline"')|raw}}
         <span class="label">所属门店</span>
         {{form_dropdown("store-oid", param.store, search.STORE_OID)|raw}}
-        <span class="label">iPad序列号</span>
-        {{form_input("serl-nbr", search.SERL_NBR, 'placeholder="iPad序列号"')|raw}}
+        <span class="label">序列号</span>
+        {{form_input("serl-nbr", search.SERL_NBR, 'class="input-small" placeholder="iPad序列号"')|raw}}
         <span class="label">门店编码</span>
-        {{form_input("store-code", search.store-code, 'placeholder="门店编码"')|raw}}
+        {{form_input("store-code", search.STORE_CODE, 'class="input-small" placeholder="门店编码"')|raw}}
         <button type="submit" class="btn btn-primary">Go!</button>
     </form>
     </div>
@@ -30,7 +30,7 @@
     {% for item in device %}
         <tr>
             <td>{{loop.index + search.start}}</td>
-            <td><a href="{{site_url()}}/device/edit/{{item.SERL_NBR}}" title="编辑">{{item.SERL_NBR}}</a></td>
+            <td><a href="{{site_url()}}device/edit/{{item.SERL_NBR}}" title="编辑">{{item.SERL_NBR}}</a></td>
             <td class="center">
             {% if item.IS_ENABLED == constant('MA_ENABLE_Y') %}
             <span class="label label-success">
@@ -49,7 +49,7 @@
     {% endfor %}
     </tbody>
     </table>
-    <a class="btn span2" href="{{site_url()}}/device/edit/0">新增</a>
+    <a class="btn span2" href="{{site_url()}}device/edit/0">新增</a>
     {{pagination|raw}}
 </div>
 

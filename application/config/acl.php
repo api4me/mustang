@@ -27,9 +27,10 @@
 |
 */
 $config['role'] = array(
-    'super' => array(
+    's' => array(
     ),
-    'admin' => array(
-        'user' => array('user', 'company', ),
+    'a' => array(
+        'user' => array('*'),
+        'home' => array('add', 'edit', 'del', 'entry'),
     ),
 );

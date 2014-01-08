@@ -92,6 +92,20 @@ class MCompany extends CI_Model {
         return $query->row();
     }
 /*}}}*/
+/*{{{ not_exists */
+    public function not_exists($str, $id) {
+        $this->db->where('COMPANY_CODE', $str);
+        $this->db->where('COMPANY_STATUS <>', MA_STATUS_D);
+        $query = $this->db->get('COMPANY');
+        if ($tmp = $query->row()) {
+            if ($tmp->COMPANY_OID != $id) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+/*}}}*/
 /*{{{ save */
     public function save($param, $id) {
         if (!$id) {

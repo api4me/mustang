@@ -33,7 +33,7 @@
     {% for item in users %}
         <tr>
             <td>{{loop.index + search.start}}</td>
-            <td><a href="{{site_url()}}/user/edit/{{item.USER_OID}}" title="编辑">{{item.LOGIN_ID}}</a></td>
+            <td><a href="{{site_url()}}user/edit/{{item.USER_OID}}" title="编辑">{{item.LOGIN_ID}}</a></td>
             <td>{{item.USER_NAME}}</td>
             <td>{{item.MOBILE}}</td>
             <td>{{option_value("role", item.USER_TYPE)}}</td>
@@ -55,7 +55,7 @@
     {% endfor %}
     </tbody>
     </table>
-    <a class="btn span2" href="{{site_url()}}/user/edit/0">新增</a>
+    <a class="btn span2" href="{{site_url()}}user/edit/0">新增</a>
     {{pagination|raw}}
 </div>
 

@@ -11,16 +11,19 @@
         <div class="ma-block clearfix">
         <p id="msg"></p>
         {{form_open('/home/save/' ~ company.COMPANY_OID, 'class="form-horizontal"')|raw}}
+        <div class="text-right"><em><i class="icon-star-empty"></i> 为必填项</em></div>
         <div class="control-group">
             <label class="control-label" for="inputCode">编码</label>
             <div class="controls">
                 {{form_input('company-code', company.COMPANY_CODE, 'id="inputCode"')|raw}}
+                <i class="icon-star-empty"></i>
             </div>
         </div>
         <div class="control-group">
             <label class="control-label" for="inputName">名称</label>
             <div class="controls">
                 {{form_input('company-name', company.COMPANY_NAME, 'id="inputName"')|raw}}
+                <i class="icon-star-empty"></i>
             </div>
         </div>
         <div class="control-group">
@@ -30,9 +33,9 @@
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label" for="inputDescr">描述</label>
+            <label class="control-label" for="inputContent">描述</label>
             <div class="controls">
-                {{form_textarea('company-descr', company.COMPANY_DESCR, 'id="inputDescr"')|raw}}
+                {{form_textarea('company-descr', company.COMPANY_DESCR, 'id="inputContent"')|raw}}
             </div>
         </div>
         <div class="control-group">
@@ -113,10 +116,11 @@
         <div class="control-group">
             <div class="controls">
                 {{form_submit('save', '保存', 'class="btn btn-primary"')|raw}}
-                <a href="{{site_url()}}/home/">返回</a>
+                <a href="{{site_url()}}home/">返回</a>
             </div>
         </div>
         <input type="hidden" name="id" value="{{company.COMPANY_OID}}" />
+        </form>
     </div>
 
 </div>

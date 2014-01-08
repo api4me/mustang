@@ -1,0 +1,57 @@
+{% extends "site.html" %}
+
+{% block operate %}
+    <h3>二级分类一览</h3>
+    <div id="second-index" class="ma-block clearfix">
+    {{form_open('/second/index', 'class="form-inline"')|raw}}
+        <span class="label">所属门店</span>
+        {{form_dropdown("store-oid", param.store, search.STORE_OID)|raw}}
+        <span class="label">所属一级分类</span>
+        {{form_hidden('flc-oid', search.FLC_OID)|raw}}
+        {{form_dropdown("flc-oid", param.first, search.FLC_OID)|raw}}
+        <span class="label">分类名</span>
+        {{form_input("flc-name", search.SLC_NAME, 'class="input-small" placeholder="分类名称"')|raw}}
+        <span class="label">编码</span>
+        {{form_input("flc-code", search.SLC_CODE, 'class="input-small" placeholder="分类编码"')|raw}}
+        <button type="submit" class="btn btn-primary">Go!</button>
+    </form>
+    </div>
+{% endblock %}
+
+{% block data %}
+<div class="ma-block clearfix">
+    <table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>分类名称</th>
+            <th>分类编码</th>
+            <th>分类描述</th>
+            <th>所属一级分类</th>
+            <th>所属门店</th>
+            <th>创建人</th>
+            <th>创建时间</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in second %}
+        <tr>
+            <td>{{loop.index + search.start}}</td>
+            <td><a href="{{site_url()}}second/edit/{{item.SLC_OID}}" title="编辑">{{item.SLC_NAME}}</a></td>
+            <td>{{item.SLC_CODE}}</td>
+            <td><abbr title="{{item.SLC_DESCR}}">{{mb_substr(item.SLC_DESCR, 0, 5)}}</abbr></td>
+            <td>{{item.FLC_NAME}}</td>
+            <td>{{item.STORE_NAME}}</td>
+            <td>{{item.USER_NAME}}</td>
+            <td>{{item.CRE_DATE|date('Y-m-d')}}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="8"><em>查了半天，没有数据，不如添加一条吧.</em></td></tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    <a class="btn span2" href="{{site_url()}}second/edit/0">新增</a>
+    {{pagination|raw}}
+</div>
+
+{% endblock %}

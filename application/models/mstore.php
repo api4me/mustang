@@ -29,14 +29,52 @@ class MStore extends CI_Model {
             , CTCT_PERS
             , UPD_DATE
         FROM STORE
-        WHERE STORE_OID=?';
-        $query = $this->db->query($q, $sid);
+        WHERE STORE_OID=? AND STORE_STATUS<>?';
+        $query = $this->db->query($q, array($sid, MA_STATUS_D));
 
         return $query->row();
     }
 /*}}}*/
+/*{{{ load_by_code */
+    public function load_by_code($code) {
+        $q = 'SELECT STORE_OID
+            , STORE_CODE
+            , STORE_NAME
+            , STORE_SRT_NAME
+            , STORE_DESCR
+            , STORE_TEL
+            , STORE_FAX
+            , STORE_PSTL_CODE
+            , STORE_ADDR1
+            , STORE_ADDR2
+            , STORE_ADDR3
+            , STORE_ADDR4
+            , CTCT_PERS
+            , UPD_DATE
+        FROM STORE
+        WHERE STORE_CODE=? AND STORE_STATUS<>?';
+        $query = $this->db->query($q, array($code, MA_STATUS_D));
 
-/*{{{ load_all */
+        return $query->row();
+    }
+/*}}}*/
+/*{{{ load_for_kv */
+    public function load_for_kv() {
+        $this->db->select('STORE_OID, STORE_NAME');
+        $this->db->where('STORE_STATUS <>', 'd');
+        $query = $this->db->get('STORE');
+
+        $out = array();
+        $tmp = $query->result();
+        foreach ($tmp as $val) {
+            $out[$val->STORE_OID] = $val->STORE_NAME;
+        }
+
+        return $out;
+    }
+/*}}}*/
+
+/*{{{ load_all_by_company */
     private function _where($param) {
         if (@$param['STORE_CODE']) {
             $this->db->like('STORE_CODE', $param['STORE_CODE']);
@@ -47,6 +85,7 @@ class MStore extends CI_Model {
         if (@$param['COMPANY_OID']) {
             $this->db->where('COMPANY_OID', $param['COMPANY_OID']);
         }
+        $this->db->where('STORE_STATUS <>', 'd'); 
     }
     public function load_all_by_company($param, $cid) {
         $param['COMPANY_OID'] = $cid;
@@ -78,6 +117,20 @@ class MStore extends CI_Model {
         // ADD logic param
         $query = $this->db->get('STORE');
         return $query->row();
+    }
+/*}}}*/
+/*{{{ not_exists */
+    public function not_exists($str, $id, $cid) {
+        $this->db->where('STORE_CODE', $str);
+        $this->db->where('COMPANY_OID', $cid);
+        $query = $this->db->get('STORE');
+        if ($tmp = $query->row()) {
+            if ($tmp->STORE_OID != $id) {
+                return false;
+            }
+        }
+
+        return true;
     }
 /*}}}*/
 /*{{{ save */

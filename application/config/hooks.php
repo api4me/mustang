@@ -17,14 +17,12 @@ $hook["post_controller_constructor"][] = array(
     "filepath" => "hooks",
 );
 
-/*
 $hook["post_controller_constructor"][] = array(
     "class"    => "Acl",
     "function" => "auth",
     "filename" => "acl.php",
     "filepath" => "hooks",
 );
-*/
 
 
 /* End of file hooks.php */

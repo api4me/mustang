@@ -59,6 +59,11 @@ class Login extends CI_Controller {
             return false;
         }
         $this->lsession->set('user', $data);
+        if ($data->USER_TYPE == MA_USER_TYPE_ADMIN) {
+            $obj = new stdClass();
+            $obj->COMPANY_OID = $data->COMPANY_OID;
+            $this->lsession->set('company', $obj);
+        }
         $out['status'] = 0;
         $out['msg'] = '登录成功';
         $this->output->set_output(json_encode($out));

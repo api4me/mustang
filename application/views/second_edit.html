@@ -1,0 +1,66 @@
+{% extends "site.html" %}
+
+{% block data %}
+<div id="second-edit">
+        {% if second.SLC_OID %}
+        <h3>二级分类管理：{{ second.SLC_NAME }}</h3>
+        {% else %}
+        <h3>新增二级分类</h3>
+        {% endif %}
+
+        <div class="ma-block clearfix">
+        <p id="msg"></p>
+        {{form_open('/second/save/' ~ second.SLC_OID, 'class="form-horizontal"')|raw}}
+        <div class="text-right"><em><i class="icon-star-empty"></i> 为必填项</em></div>
+        <div class="control-group">
+            <label class="control-label" for="inputSlcName">分类名</label>
+            <div class="controls">
+                {{form_input('slc-name', second.SLC_NAME, 'id="inputSlcName"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputSlcCode">分类编码</label>
+            <div class="controls">
+                {{form_input('slc-code', second.SLC_CODE, 'id="inputSlcCode"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputContent">描述</label>
+            <div class="controls">
+                {{form_textarea('slc-descr', second.SLC_DESCR, 'id="inputContent"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputDispSeq">展示顺序</label>
+            <div class="controls">
+                {{form_input('disp-seq', second.DISP_SEQ, 'id="inputDispSeq"')|raw}}
+                <span class="label">数值型，越小排在越前</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputStore">所属门店</label> <div class="controls">
+                {{form_dropdown('store-oid', param.store, second.STORE_OID, 'id="inputStore"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputFirst">所属一级分类</label> <div class="controls">
+                {{form_hidden('flc-oid', second.FLC_OID)|raw}}
+                {{form_dropdown('flc-oid', param.first, second.FLC_OID, 'id="inputFirst"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                {{form_submit('save', '保存', 'class="btn btn-primary"')|raw}}
+                <a href="{{site_url()}}second/">返回</a>
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{{second.SLC_OID}}" />
+
+    </div>
+
+</div>
+{% endblock %}

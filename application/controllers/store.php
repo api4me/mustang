@@ -64,12 +64,6 @@ class Store extends Ma_Controller {
 /*}}} */
 /*{{{ edit */
     public function edit($id = 0) {
-        $user = $this->lsession->get('user');
-        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
-            $this->index();
-
-            return false;
-        }
 
         $this->load->library('twig');
         $out = array();
@@ -99,7 +93,7 @@ class Store extends Ma_Controller {
 
         // Validate
         $rules = array(
-            array('field' => 'store-code', 'label' => '编码', 'rules' => 'trim|required'),
+            array('field' => 'store-code', 'label' => '编码', 'rules' => 'trim|required|callback__check_code'),
             array('field' => 'store-name', 'label' => '名称', 'rules' => 'trim|required'),
         );
         $this->load->library('form_validation');
@@ -140,6 +134,19 @@ class Store extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return false;
+    }
+/*}}}*/
+/*{{{ _check_code */
+    public function _check_code($str) {
+        $this->load->model('mstore');
+        $id = $this->input->get_post('id');
+        if (!$this->mstore->not_exists($str, $id, $this->cid)) {
+            $this->form_validation->set_message(__FUNCTION__, '编码 已经存在，请换一个。');
+
+            return false;
+        }
+
+        return true;
     }
 /*}}}*/
 /*{{{ del */

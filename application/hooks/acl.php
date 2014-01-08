@@ -19,7 +19,6 @@ class Acl {
 /*{{{ __construct*/
     function __construct() {
         $this->CI =& get_instance();
-        $this->CI->load->library('session');
 
         $this->control = $this->CI->uri->segment(1);
         $this->action = $this->CI->uri->segment(2);
@@ -27,15 +26,17 @@ class Acl {
 /*}}}*/
 /*{{ auth */
     function auth() {
-        $user = $this->CI->lsession->get('user');
-        if(empty($user)) {
-            $user->role = "guest";
+        $pass = array('api', 'login', 'logout');
+        if (!$this->control || in_array($this->control, $pass)) {
+            return true;
         }
+
+        $user = $this->CI->lsession->get('user');
 
         $this->CI->load->config('acl');
         $role = $this->CI->config->item('role');
-        if (isset($role[$user->role])) {
-            $controllers = $role[$user->role];
+        if (isset($role[$user->USER_TYPE])) {
+            $controllers = $role[$user->USER_TYPE];
             
             if (isset($controllers[$this->control])) {
                 $actions = $controllers[$this->control];

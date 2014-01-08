@@ -113,7 +113,7 @@ class User extends Ma_Controller {
         // Validate
         $rules = array(
             array('field' => 'user-name', 'label' => '姓名', 'rules' => 'trim|required'),
-            array('field' => 'login-id', 'label' => '登录号', 'rules' => 'trim|required'),
+            array('field' => 'login-id', 'label' => '登录号', 'rules' => 'trim|required|callback__check_code'),
             array('field' => 'user-type', 'label' => '用户类型', 'rules' => 'trim|required'),
             array('field' => 'user-status', 'label' => '用户状态', 'rules' => 'trim|required'),
         );
@@ -157,6 +157,19 @@ class User extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return false;
+    }
+/*}}}*/
+/*{{{ _check_code */
+    public function _check_code($str) {
+        $this->load->model('muser');
+        $id = $this->input->get_post('id');
+        if (!$this->muser->not_exists($str, $id)) {
+            $this->form_validation->set_message(__FUNCTION__, '登录ID已经存在，请换一个。');
+
+            return false;
+        }
+
+        return true;
     }
 /*}}}*/
 /*{{{ del */

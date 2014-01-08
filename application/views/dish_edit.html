@@ -1,0 +1,100 @@
+{% extends "site.html" %}
+
+{% block data %}
+<div id="dish-edit">
+        {% if dish.SLC_OID %}
+        <h3>菜品管理：{{ dish.DISH_NAME }}</h3>
+        {% else %}
+        <h3>新增菜品</h3>
+        {% endif %}
+
+        <div class="ma-block clearfix">
+        <p id="msg"></p>
+        {{form_open('/dish/save/' ~ dish.DISH_OID, 'class="form-horizontal"')|raw}}
+        <div class="text-right"><em><i class="icon-star-empty"></i> 为必填项</em></div>
+        <div class="control-group">
+            <label class="control-label" for="inputDishName">菜品名称</label>
+            <div class="controls">
+                {{form_input('dish-name', dish.DISH_NAME, 'id="inputDishName"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputDishCode">菜品编码</label>
+            <div class="controls">
+                {{form_input('dish-code', dish.DISH_CODE, 'id="inputDishCode"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputContent">描述</label>
+            <div class="controls">
+                {{form_textarea('dish-descr', dish.DISH_DESCR, 'id="inputContent"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputUnit">单位</label> <div class="controls">
+                {{form_input('unit', dish.UNIT, 'id="inputUnit"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputDispSeq">展示顺序</label>
+            <div class="controls">
+                {{form_input('disp-seq', dish.DISP_SEQ, 'id="inputDispSeq"')|raw}}
+                <span class="label">数值型，越小排在越前</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputStore">所属门店</label> <div class="controls">
+                {{form_dropdown('store-oid', param.store, dish.STORE_OID, 'id="inputStore"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputFirst">所属一级分类</label> <div class="controls">
+                {{form_hidden('flc-oid', dish.FLC_OID)|raw}}
+                {{form_dropdown('flc-oid', param.first, dish.FLC_OID, 'id="inputFirst"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputSecond">所属二级分类</label> <div class="controls">
+                {{form_hidden('slc-oid', dish.SLC_OID)|raw}}
+                {{form_dropdown('slc-oid', param.second, dish.SLC_OID, 'id="inputSecond"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputOrigCost">原价</label> <div class="controls">
+                {{form_input('orig-cost', dish.ORIG_COST, 'id="inputOrigCost"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputCurCost">现价</label> <div class="controls">
+                {{form_input('cur-cost', dish.CUR_COST, 'id="inputCurCost"')|raw}}
+                <i class="icon-star-empty"></i>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputIsProm">是否促销</label> <div class="controls">
+                {{form_dropdown('is-prom', param.prom, dish.IS_PROM, 'id="inputIsProm"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="inputIsNewProducts">是否新品推荐</label> <div class="controls">
+                {{form_dropdown('is-new-products', param.new, dish.IS_NEW_PRODUCTS, 'id="inputIsNewProducts"')|raw}}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                {{form_submit('save', '保存', 'class="btn btn-primary"')|raw}}
+                <a href="{{site_url()}}dish/">返回</a>
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{{dish.DISH_OID}}" />
+
+    </div>
+
+</div>
+{% endblock %}

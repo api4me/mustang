@@ -1,0 +1,66 @@
+{% extends "site.html" %}
+
+{% block operate %}
+    <h3>菜品一览</h3>
+    <div id="dish-index" class="ma-block clearfix">
+    {{form_open('/dish/index', 'class="form-inline"')|raw}}
+        <span class="label">所属门店</span>
+        {{form_dropdown("store-oid", param.store, search.STORE_OID)|raw}}
+        <span class="label">所属一级分类</span>
+        {{form_hidden('flc-oid', search.FLC_OID)|raw}}
+        {{form_dropdown("flc-oid", param.first, search.FLC_OID)|raw}}
+        <span class="label">所属二级分类</span>
+        {{form_hidden('slc-oid', search.SLC_OID)|raw}}
+        {{form_dropdown("slc-oid", param.second, search.SLC_OID)|raw}}
+        <span class="label">菜名</span>
+        {{form_input("dish-name", search.DISH_NAME, 'class="input-small" placeholder="菜品名称"')|raw}}
+        <span class="label">编码</span>
+        {{form_input("dish-code", search.DISH_CODE, 'class="input-small" placeholder="菜品编码"')|raw}}
+        <button type="submit" class="btn btn-primary">Go!</button>
+    </form>
+    </div>
+{% endblock %}
+
+{% block data %}
+<div class="ma-block clearfix">
+    <table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>菜品名称</th>
+            <th>菜品编码</th>
+            <th>二级分类</th>
+            <th>一级分类</th>
+            <th>所属门店</th>
+            <th>单位</th>
+            <th>原价</th>
+            <th>现价</th>
+            <th>是否促销</th>
+            <th>是否推荐</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in dish %}
+        <tr>
+            <td>{{loop.index + search.start}}</td>
+            <td><a href="{{site_url()}}dish/edit/{{item.DISH_OID}}" title="编辑">{{item.DISH_NAME}}</a></td>
+            <td>{{item.DISH_CODE}}</td>
+            <td>{{item.SLC_NAME}}</td>
+            <td>{{item.FLC_NAME}}</td>
+            <td>{{item.STORE_NAME}}</td>
+            <td>{{item.UNIT}}</td>
+            <td>{{item.ORIG_COST}}</td>
+            <td>{{item.CUR_COST}}</td>
+            <td>{{option_value('yesno', item.IS_PROM)}}</td>
+            <td>{{option_value('yesno', item.IS_NEW_PRODUCTS)}}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="7"><em>查了半天，没有数据，不如添加一条吧.</em></td></tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    <a class="btn span2" href="{{site_url()}}dish/edit/0">新增</a>
+    {{pagination|raw}}
+</div>
+
+{% endblock %}

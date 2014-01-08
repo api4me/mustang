@@ -83,17 +83,18 @@ class MUser extends CI_Model {
         return $query->row();
     }
 /*}}}*/
-/*{{{ load_for_deal */
-    public function load_for_deal($param) {
-        $this->db->select('id, username');
-        $key = '(username=\'' . $this->db->escape_str($param['key']) 
-            . '\' OR phone=\'' . $this->db->escape_str($param['key'])
-            . '\')';
-        $this->db->where($key);
-        $this->db->where('role', 'buyer');
-        $this->db->where('enable <>', 'D');
-        $query = $this->db->get('##user');
-        return $query->row();
+/*{{{ not_exists */
+    public function not_exists($str, $id) {
+        $this->db->where('LOGIN_ID', $str);
+        $this->db->where('USER_STATUS <>', MA_STATUS_D);
+        $query = $this->db->get('USER_PROFILE');
+        if ($tmp = $query->row()) {
+            if ($tmp->USER_OID != $id) {
+                return false;
+            }
+        }
+
+        return true;
     }
 /*}}}*/
 /*{{{ save */
@@ -130,56 +131,6 @@ class MUser extends CI_Model {
         return false;
     }
 /*}}}*/
-/*{{{ change_enable */
-    public function change_enable($param, $id) {
-        if (!$id) {
-            $this->db->set('updated', 'now()', false);
-            return $this->db->update('##user', $param, array('id'=>$id));
-        }
 
-        return false;
-    }
-/*}}}*/
-/*{{{ get_data_by_phone */
-    public function get_data_by_phone($phone) {
-        $this->db->where('phone', $phone);
-        $this->db->where('enable <>', 'D');
-        $query = $this->db->get('##user');
-        return $query->row();
-    }
-/*}}}*/
-/*{{{ exists_username */
-    public function exists_username($str, $id = 0) {
-        if ($id) {
-            $this->db->where('id <>', $id);
-        }
-        $this->db->where('username', $str);
-        $this->db->where('enable <>', 'D');
-        $query = $this->db->get('##user');
-        return ($query->row()) ? true : false;
-    }
-/*}}}*/
-/*{{{ exists_phone */
-    public function exists_phone($str, $id = 0) {
-        if ($id) {
-            $this->db->where('id <>', $id);
-        }
-        $this->db->where('phone', $str);
-        $this->db->where('enable <>', 'D');
-        $query = $this->db->get('##user');
-        return ($query->row()) ? true : false;
-    }
-/*}}}*/
-/*{{{ exists_email */
-    public function exists_email($str, $id = 0) {
-        if ($id) {
-            $this->db->where('id <>', $id);
-        }
-        $this->db->where('email', $str);
-        $this->db->where('enable <>', 'D');
-        $query = $this->db->get('##user');
-        return ($query->row()) ? true : false;
-    }
-/*}}}*/
 
 }

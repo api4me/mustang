@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Device extends Ma_Controller {
+class First extends Ma_Controller {
 
     private $cid;
 
@@ -29,16 +29,16 @@ class Device extends Ma_Controller {
 	public function index($start = 0) {
         $this->load->library('twig');
         $out = array();
-        $out['title'] = '设备管理';
+        $out['title'] = '一级分类管理';
 
         $search = array();
         if ($this->input->post()) {
-            $search['STORE_CODE'] = $this->input->get_post('store-code');
             $search['STORE_OID'] = $this->input->get_post('store-oid');
-            $search['SERL_NBR'] = $this->input->get_post('serl-nbr');
-            $this->lsession->set('device_search', $search);
+            $search['FLC_NAME'] = $this->input->get_post('flc-name');
+            $search['FLC_CODE'] = $this->input->get_post('flc-code');
+            $this->lsession->set('first_search', $search);
         } else {
-            if ($tmp = $this->lsession->get('device_search')) {
+            if ($tmp = $this->lsession->get('first_search')) {
                 $search = $tmp;
             }
         }
@@ -53,40 +53,37 @@ class Device extends Ma_Controller {
         $out['param'] = $param;
 
         // The data of search
-        $this->load->model('mtrmlequip');
-        if($data = $this->mtrmlequip->load_all_by_company($search, $this->cid)) {
-            $out["device"] = $data["data"];
+        $this->load->model('mfirstlevelcatg');
+        if($data = $this->mfirstlevelcatg->load_all_by_company($search, $this->cid)) {
+            $out["first"] = $data["data"];
 
             // Pagaination
             $this->load->library("pagination");
             $this->pagination->uri_segment = 3;
             $this->pagination->total_rows = $data["num"];
-            $this->pagination->base_url = site_url() . "/device/index";
+            $this->pagination->base_url = site_url() . "/first/index";
             $out["pagination"] = $this->pagination->create_links();
         }
 
-        $this->twig->display('device_index.html', $out);
+        $this->twig->display('first_index.html', $out);
 	}
 /*}}} */
 /*{{{ edit */
     public function edit($id = 0) {
         $this->load->library('twig');
         $out = array();
-        $out['title'] = '设备管理';
-
+        $out['title'] = '一级分类管理';
+        
         $param = array();
         $this->load->model('mstore');
         $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv());
-        $param['enable'] = $this->lcommon->form_option('enable');
-        $param['yesno'] = $this->lcommon->form_option('yesno');
         $out['param'] = $param;
-        
-        $param = array();
-        $this->load->model('mtrmlequip');
+
+        $this->load->model('mfirstlevelcatg');
         if ($id) {
-            $out['device'] = $this->mtrmlequip->load($id, $this->cid);
+            $out['first'] = $this->mfirstlevelcatg->load($id, $this->cid);
         }
-        $this->twig->display('device_edit.html', $out);
+        $this->twig->display('first_edit.html', $out);
 
         return true;
     }
@@ -105,8 +102,10 @@ class Device extends Ma_Controller {
 
         // Validate
         $rules = array(
-            array('field' => 'serl-nbr', 'label' => '序列号', 'rules' => 'trim|required'),
-            array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'trim|required'),
+            array('field' => 'flc-code', 'label' => '编码', 'rules' => 'trim|required|callback__check_code'),
+            array('field' => 'flc-name', 'label' => '名称', 'rules' => 'trim|required'),
+            array('field' => 'disp-seq', 'label' => '展示顺序', 'rules' => 'integer'),
+            array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'trim|callback__select'),
         );
         $this->load->library('form_validation');
         $this->form_validation->set_rules($rules);
@@ -118,15 +117,16 @@ class Device extends Ma_Controller {
         }
 
         $param = array();
-        $param['SERL_NBR'] = $this->input->post('serl-nbr');
-        $param['IS_ENABLED'] = $this->input->post('is-enabled');
+        $param['FLC_CODE'] = $this->input->post('flc-code');
+        $param['FLC_NAME'] = $this->input->post('flc-name');
+        $param['FLC_DESCR'] = $this->input->post('flc-descr');
+        $param['DISP_SEQ'] = $this->input->post('disp-seq');
         $param['STORE_OID'] = $this->input->post('store-oid');
-        $param['IS_UPLOAD_BEHAVIORAL'] = $this->input->post('is-upload-behavioral');
-        $this->load->model('mtrmlequip');
-        if ($this->mtrmlequip->save($param, $id)) {
+        $this->load->model('mfirstlevelcatg');
+        if ($cid = $this->mfirstlevelcatg->save($param, $id)) {
             $out['status'] = 0;
             $out['msg'] = '保存成功';
-            $out['id'] = $param['SERL_NBR'];
+            $out['id'] = $cid;
             $this->output->set_output(json_encode($out));
 
             return true;
@@ -137,6 +137,19 @@ class Device extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return false;
+    }
+/*}}}*/
+/*{{{ _check_code */
+    public function _check_code($str) {
+        $this->load->model('mfirstlevelcatg');
+        $id = $this->input->get_post('id');
+        if (!$this->mfirstlevelcatg->not_exists($str, $id, $this->cid)) {
+            $this->form_validation->set_message(__FUNCTION__, '编码 已经存在，请换一个。');
+
+            return false;
+        }
+
+        return true;
     }
 /*}}}*/
 /*{{{ del */
@@ -175,6 +188,16 @@ class Device extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return false;
+    }
+/*}}}*/
+/*{{{ _select */
+    public function _select($str) {
+        if (!$str) {
+            $this->form_validation->set_message(__FUNCTION__, '%s 须选择');
+            return false;
+        }
+
+        return true;
     }
 /*}}}*/
 

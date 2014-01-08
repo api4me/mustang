@@ -30,7 +30,7 @@
     {% for item in store %}
         <tr>
             <td>{{loop.index + search.start}}</td>
-            <td><a href="{{site_url()}}/store/edit/{{item.STORE_OID}}" title="编辑">{{item.STORE_NAME}}</a></td>
+            <td><a href="{{site_url()}}store/edit/{{item.STORE_OID}}" title="编辑">{{item.STORE_NAME}}</a></td>
             <td>{{item.STORE_SRT_NAME}}</td>
             <td>{{item.STORE_CODE}}</td>
             <td>{{item.STORE_TEL}}</td>
@@ -41,7 +41,7 @@
     {% endfor %}
     </tbody>
     </table>
-    <a class="btn span2" href="{{site_url()}}/store/edit/0">新增</a>
+    <a class="btn span2" href="{{site_url()}}store/edit/0">新增</a>
     {{pagination|raw}}
 </div>
 
