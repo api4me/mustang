@@ -1,0 +1,60 @@
+{% extends "site.html" %}
+
+{% block data %}
+<div id="dish-image-edit">
+        <h3>菜品图片管理：{{ dish.DISH_NAME }}</h3>
+
+        <div class="ma-block clearfix">
+        <p id="msg"></p>
+        {{form_open('/dish/saveimage/' ~ dish.DISH_OID, 'class="form-horizontal"')|raw}}
+        <script type="text/template" id="image-tpl">
+            <li class="span4">
+                <div class="thumbnail">
+                    <div class="text-center del"><span> X </span></div>
+                    <div class="text-center" style="padding: 10px 0">
+                        <img class="img-polaroid" src="<%= image.show %>" data-ori="<%= image.ori %>" data-name="<%= image.name %>" />
+                    </div>
+                    <div class="text-left">
+                        <p>
+                            <span class="label">名称</span>
+                            <input type="text" name="title[]" value="<%= image.title %>" />
+                        </p>
+                        <p>
+                            <span class="label">描述</span>
+                            <textarea name="desc[]" rows="3"><%= image.descr %></textarea>
+                        </p>
+                        <p>
+                            <span class="label">首图</span>
+                            <input type="checkbox" name="dflt[]" value="1"<% if (image.default == '{{constant('MA_ENABLE_Y')}}') { %> checked=true <% } %> /> 是
+                        </p>
+                        <p>
+                            <span class="label">显示</span>
+                            <input type="checkbox" name="disp[]" value="1"<% if (image.disp == '{{constant('MA_ENABLE_Y')}}' || typeof image.disp == 'undefined' ) { %> checked=true <% } %> /> 是
+                        </p>
+                    </div>
+                </div>
+            </li>
+        </script>
+        <ul class="thumbnails">
+            <script>
+               var dish_image = {{json_encode(image)|raw}}; 
+            </script>
+            <li>
+                <div class="plus">
+                <input type="file" name="upload" class="upload" id="upload">
+                </div>
+            </li>
+        </ul>
+
+        <div class="control-group">
+            <div class="controls">
+                {{form_submit('save', '保存', 'class="btn btn-primary"')|raw}}
+                <a href="{{site_url()}}dish/">返回</a>
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{{dish.DISH_OID}}" />
+
+    </div>
+
+</div>
+{% endblock %}
