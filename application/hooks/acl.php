@@ -31,7 +31,9 @@ class Acl {
             return true;
         }
 
-        $user = $this->CI->lsession->get('user');
+        if (!$user = $this->CI->lsession->get('user')) {
+            redirect("/login");
+        }
 
         $this->CI->load->config('acl');
         $role = $this->CI->config->item('role');

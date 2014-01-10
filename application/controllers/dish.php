@@ -51,7 +51,7 @@ class Dish extends Ma_Controller {
 
         $param = array();
         $this->load->model('mstore');
-        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv());
+        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
         $param['first'] = $this->lcommon->insert_blank(array());
         $param['second'] = $this->lcommon->insert_blank(array());
         $out['param'] = $param;
@@ -80,7 +80,7 @@ class Dish extends Ma_Controller {
         
         $param = array();
         $this->load->model('mstore');
-        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv());
+        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
         $param['first'] = $this->lcommon->insert_blank(array());
         $param['second'] = $this->lcommon->insert_blank(array());
         $param['prom'] = $this->lcommon->insert_blank($this->lcommon->option('yesno'));
@@ -184,6 +184,99 @@ class Dish extends Ma_Controller {
         }
 
         return true;
+    }
+/*}}}*/
+/*{{{ image */
+    public function image($id) {
+        $this->load->library('twig');
+        $out = array();
+        $out['title'] = '菜品图片管理';
+        
+        $this->load->model('mdishes');
+        if ($id) {
+            $out['dish'] = $this->mdishes->load($id, $this->cid);
+            $out['image'] = array();
+            if ($tmp = $this->mdishes->load_image($id, $this->cid)) {
+                foreach($tmp as $val) {
+                    $file = array();
+                    list($file['raw_name'], $file['file_ext']) = explode('.', $val->PIC_URL);
+                    if (substr($file['raw_name'], -2) != '_i') {
+                        $thumbnail = $file['raw_name'] . '_i.' . $file['file_ext'];
+                    } else {
+                        $thumbnail = $val->PIC_URL;
+                    }
+
+                    $out['image'][] = array(
+                        'ori' => $thumbnail,
+                        'name' => $thumbnail,
+                        'title' => $val->PIC_NAME,
+                        'title' => $val->PIC_NAME,
+                        'descr' => $val->PIC_DESCR,
+                        'show' => base_url() . $thumbnail,
+                        'default' => $val->IS_DFLT,
+                        'disp' => $val->IS_DISP,
+                    );
+                }
+            }
+        } 
+        $this->twig->display('dish_image.html', $out); 
+        return true;
+    }
+/*}}}*/
+/*{{{ saveimage */
+    public function saveimage($id = 0) {
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+        if (!$id || !is_numeric($id)) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        // Check id in the company
+        $this->load->model('mdishes');
+        if (!$this->mdishes->load($id, $this->cid)) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $param = array(
+            'PIC_NAME' => $this->input->get_post('title'),
+            'PIC_DESCR' => $this->input->get_post('desc'),
+            'PIC_URL' => $this->input->get_post('image'),
+            'IS_DFLT' => $this->input->get_post('dflt'),
+            'IS_DISP' => $this->input->get_post('disp'),
+            'DISP_OID' => $id,
+        );
+
+        if ($this->mdishes->saveimage($param, $id, $this->cid)) {
+            $out['status'] = 0;
+            $out['msg'] = '保存成功';
+            $out['id'] = $id;
+            $this->output->set_output(json_encode($out));
+
+            return true;
+        }
+
+        $out['status'] = 1;
+        $out['msg'] = '保存失败';
+        $this->output->set_output(json_encode($out));
+
+        return false;
+
+
     }
 /*}}}*/
 /*{{{ del */

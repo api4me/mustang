@@ -267,3 +267,34 @@ ul.nav-list {
 #user-edit #reset-pwd-modal .modal-body {
     width: 90%;
 }
+
+/* Dish
+--------------------------------------*/
+#dish-image-edit .plus {
+    width: 100px;
+    height: 100px;
+    border: 2px dashed #cecece;
+    background: url(../img/plus.png) 36px 38px no-repeat;
+}
+
+#dish-image-edit .upload {
+    cursor: pointer;
+    position: relative;
+    font-size: 100px;
+    background: #f60;
+    top: 40px;
+    right: 0;
+    width: 20px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+#dish-image-edit .del span {
+    display: block;
+    float: right;
+    text-align: right;
+    color: red;
+    font-weight: bold;
+    padding: 0 10px;
+    cursor: pointer;
+}
+

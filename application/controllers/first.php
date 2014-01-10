@@ -49,7 +49,7 @@ class First extends Ma_Controller {
 
         $param = array();
         $this->load->model('mstore');
-        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv());
+        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
         $out['param'] = $param;
 
         // The data of search
@@ -76,7 +76,7 @@ class First extends Ma_Controller {
         
         $param = array();
         $this->load->model('mstore');
-        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv());
+        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
         $out['param'] = $param;
 
         $this->load->model('mfirstlevelcatg');

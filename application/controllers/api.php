@@ -301,4 +301,15 @@ class Api extends CI_Controller {
     }
 /*}}}*/
 
+/*{{{ upload */
+    public function upload() {
+        $this->load->library('limage');
+        $out = $this->limage->upload();
+
+        // IE can not parse json data via ajax upload.
+        // $this->ajax_return($out);
+        die(json_encode($out));
+    }
+/*}}}*/
+
 }

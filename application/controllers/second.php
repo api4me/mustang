@@ -50,7 +50,7 @@ class Second extends Ma_Controller {
 
         $param = array();
         $this->load->model('mstore');
-        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv());
+        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
         $param['first'] = $this->lcommon->insert_blank(array());
         $out['param'] = $param;
 
@@ -78,7 +78,7 @@ class Second extends Ma_Controller {
         
         $param = array();
         $this->load->model('mstore');
-        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv());
+        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
         $param['first'] = $this->lcommon->insert_blank(array());
         $out['param'] = $param;
 

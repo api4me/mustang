@@ -59,9 +59,10 @@ class MStore extends CI_Model {
     }
 /*}}}*/
 /*{{{ load_for_kv */
-    public function load_for_kv() {
+    public function load_for_kv($cid) {
         $this->db->select('STORE_OID, STORE_NAME');
-        $this->db->where('STORE_STATUS <>', 'd');
+        $this->db->where('STORE_STATUS <>', MA_STATUS_D);
+        $this->db->where('COMPANY_OID', $cid);
         $query = $this->db->get('STORE');
 
         $out = array();

@@ -137,15 +137,15 @@ class MDishes extends CI_Model {
 /*}}}*/
 /*{{{ load */
     public function load($id, $cid) {
-        $this->db->select('D.*, SLC.SLC_OID, FLC.FLC_OID, S.STORE_OID, SLD.DISP_SEQ');
-        $this->db->from('DISHES D');
-        $this->db->join('SECOND_LEVEL_DISHES SLD', 'SLD.DISH_OID=D.DISH_OID');
-        $this->db->join('SECOND_LEVEL_CATG SLC', 'SLD.SLC_OID=SLC.SLC_OID AND SLC.SLC_STATUS<>\'d\'');
-        $this->db->join('FIRST_LEVEL_CATG FLC', 'FLC.FLC_OID=SLC.FLC_OID AND FLC.FLC_STATUS<>\'d\'');
-        $this->db->join('STORE S', "S.STORE_OID=FLC.STORE_OID AND S.COMPANY_OID={$cid} AND S.STORE_STATUS<>'d'");
-        $this->db->where('D.DISH_STATUS <>', MA_STATUS_D);
-        $this->db->where('D.DISH_OID', $id);
-        $query = $this->db->get();
+        $q = 'SELECT D.*, SLC.SLC_OID, FLC.FLC_OID, S.STORE_OID, SLD.DISP_SEQ
+            FROM DISHES D
+            INNER JOIN SECOND_LEVEL_DISHES SLD ON SLD.DISH_OID=D.DISH_OID
+            INNER JOIN SECOND_LEVEL_CATG SLC ON SLD.SLC_OID=SLC.SLC_OID AND SLC.SLC_STATUS<>?
+            INNER JOIN FIRST_LEVEL_CATG FLC ON FLC.FLC_OID=SLC.FLC_OID AND FLC.FLC_STATUS<>?
+            INNER JOIN STORE S ON S.STORE_OID=FLC.STORE_OID AND S.COMPANY_OID=? AND S.STORE_STATUS<>?
+            WHERE D.DISH_OID=? AND D.DISH_STATUS <>?
+        ';
+        $query = $this->db->query($q, array(MA_STATUS_D, MA_STATUS_D, $cid, MA_STATUS_D, $id, MA_STATUS_D));
 
         return $query->row();
     }
@@ -242,6 +242,106 @@ class MDishes extends CI_Model {
         }
 
         return false;
+    }
+/*}}}*/
+/*{{{ load_image */
+    public function load_image($id, $cid) {
+        $q = 'SELECT DP.PIC_OID
+            , DP.PIC_NAME
+            , DP.PIC_DESCR
+            , DP.PIC_URL
+            , DP.IS_DFLT
+            , DP.IS_DISP
+            , DP.DISH_OID
+            FROM DISH_PICTURE DP
+            INNER JOIN STORE_DISHES SD ON SD.DISH_OID=DP.DISH_OID AND SD.COMPANY_OID=?
+            WHERE DP.DISH_OID=?
+        ';
+        $query = $this->db->query($q, array($cid, $id));
+        return $query->result();
+    }
+/*}}}*/
+/*{{{ saveimage */
+    public function saveimage($param, $id, $cid) {
+        if (!$param['PIC_URL']) {
+            return false;
+        }
+
+        $ori_images = array();
+        $ori_image_ids = array();
+        if ($tmp = $this->load_image($id, $cid)) {
+            foreach ($tmp as $val) {
+                $ori_images[$val->PIC_URL] = $val->PIC_URL;
+                $ori_image_ids[] = $val->PIC_OID;
+            }
+        }
+
+        $this->db->trans_start();
+        if ($ori_image_ids) {
+            $this->db->where_in('PIC_OID', $ori_image_ids);
+            if (!$this->db->delete('DISH_PICTURE')) {
+                $this->db->trans_rollback();
+
+                return false;
+            }
+        }
+
+        $this->load->library('limage');
+        $default = false;
+        foreach ($param['PIC_URL'] as $key=>$val) {
+            // Move image
+            if (!list($ori, $cur) = explode('~', $val)) {
+                $this->db->trans_rollback();
+
+                return false;
+            }
+            if ($ori == $cur) {
+                unset($ori_images[$ori]);
+
+                $file = array();
+                list($file['raw_name'], $file['file_ext']) = explode('.', $cur);
+                if (substr($file['raw_name'], -2) == '_i') {
+                    $cur = substr($file['raw_name'], 0, -2) . '.' . $file['file_ext'];
+                }
+            } else {
+                $tmp = $this->limage->move($cur);
+                $cur = $tmp['url'];
+            }
+
+            if (!$pid = $this->lcommon->sequence('DISH_PICTURE_SEQ')) {
+                $this->db->trans_rollback();
+
+                return false;
+            }
+
+            // First checked is default
+            $default = ($param['IS_DFLT'][$key] && !$default)? true: false;
+            $data = array(
+                'PIC_OID' => $pid,
+                'PIC_NAME' => $param['PIC_NAME'][$key],
+                'PIC_DESCR' => $param['PIC_DESCR'][$key],
+                'PIC_URL' => $cur,
+                'IS_DFLT' => ($default && $param['IS_DFLT'][$key]) ? MA_ENABLE_Y : MA_ENABLE_N,
+                'IS_DISP' => $param['IS_DISP'][$key]? MA_ENABLE_Y : MA_ENABLE_N,
+                'DISH_OID' => $id,
+            );
+            if (!$this->db->insert('DISH_PICTURE', $data)) {
+                $this->db->trans_rollback();
+
+                return false;
+            }
+        }
+
+        $this->db->trans_complete();
+
+        // Delete image
+        if ($ori_images) {
+            foreach ($ori_images as $val) {
+                $this->limage->del($val);
+            }
+        }
+
+        return true;
     }
 /*}}}*/
 /*{{{ del */
