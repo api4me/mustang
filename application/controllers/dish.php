@@ -116,8 +116,8 @@ class Dish extends Ma_Controller {
             array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'trim|callback__select'),
             array('field' => 'flc-oid', 'label' => '所属一级分类', 'rules' => 'trim|callback__select'),
             array('field' => 'slc-oid', 'label' => '所属二级分类', 'rules' => 'trim|callback__select'),
-            array('field' => 'orig-cost', 'label' => '原价', 'rules' => 'trim|required|decimal'),
-            array('field' => 'cur-cost', 'label' => '现价', 'rules' => 'trim|required|decimal'),
+            array('field' => 'orig-cost', 'label' => '原价', 'rules' => 'trim|required|callback__decimal'),
+            array('field' => 'cur-cost', 'label' => '现价', 'rules' => 'trim|required|callback__decimal'),
         );
         $this->load->library('form_validation');
         $this->form_validation->set_rules($rules);
@@ -171,6 +171,17 @@ class Dish extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return false;
+    }
+/*}}}*/
+/*{{{ _decimal */
+    public function _decimal($str) {
+        if (!is_numeric($str)) {
+            $this->form_validation->set_message(__FUNCTION__, '请正确填写金额。');
+
+            return false;
+        }
+
+        return true;
     }
 /*}}}*/
 /*{{{ _check_code */

@@ -15,8 +15,13 @@
         <div class="control-group">
             <label class="control-label" for="inputSerlNbr">序列号</label>
             <div class="controls">
+            {% if device.SERL_NBR %}
+                {{ device.SERL_NBR }}
+                {{form_hidden('serl-nbr', device.SERL_NBR, 'id="inputSerNbr"')|raw}}
+            {% else %}
                 {{form_input('serl-nbr', device.SERL_NBR, 'id="inputSerNbr"')|raw}}
                 <i class="icon-star-empty"></i>
+            {% endif %}
             </div>
         </div>
         <div class="control-group">
