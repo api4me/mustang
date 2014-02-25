@@ -26,7 +26,7 @@ class Acl {
 /*}}}*/
 /*{{ auth */
     function auth() {
-        $pass = array('api', 'login', 'logout');
+        $pass = array('api', 'login', 'logout', 'captcha');
         if (!$this->control || in_array($this->control, $pass)) {
             return true;
         }

@@ -65,7 +65,7 @@ class Dish extends Ma_Controller {
             $this->load->library("pagination");
             $this->pagination->uri_segment = 3;
             $this->pagination->total_rows = $data["num"];
-            $this->pagination->base_url = site_url() . "/second/index";
+            $this->pagination->base_url = site_url() . "/dish/index";
             $out["pagination"] = $this->pagination->create_links();
         }
 
