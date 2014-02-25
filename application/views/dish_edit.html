@@ -22,8 +22,13 @@
         <div class="control-group">
             <label class="control-label" for="inputDishCode">菜品编码</label>
             <div class="controls">
+            {% if dish.SLC_OID %}
+                {{ dish.DISH_CODE }}
+                {{form_hidden('dish-code', dish.DISH_CODE, 'id="inputDishCode"')|raw}}
+            {% else %}
                 {{form_input('dish-code', dish.DISH_CODE, 'id="inputDishCode"')|raw}}
                 <i class="icon-star-empty"></i>
+            {% endif %}
             </div>
         </div>
         <div class="control-group">

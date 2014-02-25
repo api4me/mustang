@@ -22,8 +22,13 @@
         <div class="control-group">
             <label class="control-label" for="inputFlcCode">分类编码</label>
             <div class="controls">
+            {% if first.FLC_OID %}
+                {{ first.FLC_CODE }}
+                {{form_hidden('flc-code', first.FLC_CODE, 'id="inputFlcCode"')|raw}}
+            {% else %}
                 {{form_input('flc-code', first.FLC_CODE, 'id="inputFlcCode"')|raw}}
                 <i class="icon-star-empty"></i>
+            {% endif %}
             </div>
         </div>
         <div class="control-group">

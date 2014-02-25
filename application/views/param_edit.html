@@ -15,8 +15,13 @@
         <div class="control-group">
             <label class="control-label" for="inputParamCode">参数编码</label>
             <div class="controls">
+            {% if param.PARAM_OID %}
+                {{ param.PARAM_CODE }}
+                {{form_hidden('param-code', param.PARAM_CODE, 'id="inputParamCode"')|raw}}
+            {% else %}
                 {{form_input('param-code', param.PARAM_CODE, 'id="inputParamCode"')|raw}}
                 <i class="icon-star-empty"></i>
+            {% endif %}
             </div>
         </div>
         <div class="control-group">

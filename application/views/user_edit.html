@@ -15,7 +15,12 @@
         <div class="control-group">
             <label class="control-label" for="inputCode">编码</label>
             <div class="controls">
+            {% if user.USER_OID %}
+                {{ user.USER_CODE }}
+                {{form_hidden('user-code', user.USER_CODE, 'id="inputCode"')|raw}}
+            {% else %}
                 {{form_input('user-code', user.USER_CODE, 'id="inputCode"')|raw}}
+            {% endif %}
             </div>
         </div>
         <div class="control-group">

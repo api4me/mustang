@@ -15,8 +15,13 @@
         <div class="control-group">
             <label class="control-label" for="inputCode">编码</label>
             <div class="controls">
+            {% if store.STORE_OID %}
+                {{ store.STORE_CODE }}
+                {{form_hidden('store-code', store.STORE_CODE, 'id="inputCode"')|raw}}
+            {% else %}
                 {{form_input('store-code', store.STORE_CODE, 'id="inputCode"')|raw}}
                 <i class="icon-star-empty"></i>
+            {% endif %}
             </div>
         </div>
         <div class="control-group">
