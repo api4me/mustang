@@ -124,6 +124,7 @@ class LImage {
 /*}}}*/
 /*{{{ del */
     public function del($name) {
+        $name = array_pop(explode('/', $name));
         $file = array();
         list($file['raw_name'], $file['file_ext']) = explode('.', $name);
         if (substr($file['raw_name'], -2) == '_i') {
@@ -134,13 +135,8 @@ class LImage {
             $file['file_name'] = $file['raw_name'] . '.' . $file['file_ext'];
         }
 
-        if (strpos($file['thumb_name'], $this->folder['real']) !== false) {
-            @unlink($file['thumb_name']);
-            @unlink($file['file_name']);
-        } else {
-            @unlink($this->folder['real'] . $file['thumb_name']);
-            @unlink($this->folder['real'] . $file['file_name']);
-        }
+        @unlink($this->folder['real'] . '/' . $file['thumb_name']);
+        @unlink($this->folder['real'] . '/' . $file['file_name']);
 
         $out = array();
         $out['status'] = 0;

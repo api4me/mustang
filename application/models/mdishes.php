@@ -263,10 +263,6 @@ class MDishes extends CI_Model {
 /*}}}*/
 /*{{{ saveimage */
     public function saveimage($param, $id, $cid) {
-        if (!$param['PIC_URL']) {
-            return false;
-        }
-
         $ori_images = array();
         $ori_image_ids = array();
         if ($tmp = $this->load_image($id, $cid)) {
@@ -288,47 +284,49 @@ class MDishes extends CI_Model {
 
         $this->load->library('limage');
         $default = false;
-        foreach ($param['PIC_URL'] as $key=>$val) {
-            // Move image
-            if (!list($ori, $cur) = explode('~', $val)) {
-                $this->db->trans_rollback();
+        if (is_array($param['PIC_URL'])) {
+            foreach ($param['PIC_URL'] as $key=>$val) {
+                // Move image
+                if (!list($ori, $cur) = explode('~', $val)) {
+                    $this->db->trans_rollback();
 
-                return false;
-            }
-            if ($ori == $cur) {
-                unset($ori_images[$ori]);
-
-                $file = array();
-                list($file['raw_name'], $file['file_ext']) = explode('.', $cur);
-                if (substr($file['raw_name'], -2) == '_i') {
-                    $cur = substr($file['raw_name'], 0, -2) . '.' . $file['file_ext'];
+                    return false;
                 }
-            } else {
-                $tmp = $this->limage->move($cur);
-                $cur = $tmp['url'];
-            }
+                if ($ori == $cur) {
+                    $file = array();
+                    list($file['raw_name'], $file['file_ext']) = explode('.', $cur);
+                    if (substr($file['raw_name'], -2) == '_i') {
+                        $cur = substr($file['raw_name'], 0, -2) . '.' . $file['file_ext'];
+                    }
 
-            if (!$pid = $this->lcommon->sequence('DISH_PICTURE_SEQ')) {
-                $this->db->trans_rollback();
+                    unset($ori_images[$cur]);
+                } else {
+                    $tmp = $this->limage->move($cur);
+                    $cur = $tmp['url'];
+                }
 
-                return false;
-            }
+                if (!$pid = $this->lcommon->sequence('DISH_PICTURE_SEQ')) {
+                    $this->db->trans_rollback();
 
-            // First checked is default
-            $default = ($param['IS_DFLT'][$key] && !$default)? true: false;
-            $data = array(
-                'PIC_OID' => $pid,
-                'PIC_NAME' => $param['PIC_NAME'][$key],
-                'PIC_DESCR' => $param['PIC_DESCR'][$key],
-                'PIC_URL' => $cur,
-                'IS_DFLT' => ($default && $param['IS_DFLT'][$key]) ? MA_ENABLE_Y : MA_ENABLE_N,
-                'IS_DISP' => $param['IS_DISP'][$key]? MA_ENABLE_Y : MA_ENABLE_N,
-                'DISH_OID' => $id,
-            );
-            if (!$this->db->insert('DISH_PICTURE', $data)) {
-                $this->db->trans_rollback();
+                    return false;
+                }
 
-                return false;
+                // First checked is default
+                $default = ($param['IS_DFLT'][$key] && !$default)? true: false;
+                $data = array(
+                    'PIC_OID' => $pid,
+                    'PIC_NAME' => $param['PIC_NAME'][$key],
+                    'PIC_DESCR' => $param['PIC_DESCR'][$key],
+                    'PIC_URL' => $cur,
+                    'IS_DFLT' => ($default && $param['IS_DFLT'][$key]) ? MA_ENABLE_Y : MA_ENABLE_N,
+                    'IS_DISP' => $param['IS_DISP'][$key]? MA_ENABLE_Y : MA_ENABLE_N,
+                    'DISH_OID' => $id,
+                );
+                if (!$this->db->insert('DISH_PICTURE', $data)) {
+                    $this->db->trans_rollback();
+
+                    return false;
+                }
             }
         }
 
