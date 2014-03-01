@@ -170,11 +170,12 @@ class MStore extends CI_Model {
 /*}}}*/
 /*{{{ del */
     public function del($id) {
-        // TODO delete relation table
+        // Do not dele the relation table for prevent making a mistake
         $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
         $this->db->set('UPD_DATE', 'now()', false);
-        $param['COMPANY_STATUS'] = MA_STATUS_D;
-        if ($this->db->update('COMPANY', $param, array('COMPANY_OID'=>$id))) {
+        $this->db->set('STORE_STATUS', MA_STATUS_D);
+        $this->db->where_in($id);
+        if ($this->db->update('STORE')) {
             return true;
         }
 

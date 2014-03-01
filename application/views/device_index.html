@@ -20,6 +20,7 @@
     <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
+            <th>{{form_checkbox('checkall')|raw}}</th>
             <th>#</th>
             <th>设备序列号</th>
             <th>是否启用</th>
@@ -29,6 +30,7 @@
     <tbody>
     {% for item in device %}
         <tr>
+            <td>{{form_checkbox('check', item.SERL_NBR)|raw}}</td>
             <td>{{loop.index + search.start}}</td>
             <td><a href="{{site_url()}}device/edit/{{item.SERL_NBR}}" title="编辑">{{item.SERL_NBR}}</a></td>
             <td class="center">
@@ -50,6 +52,7 @@
     </tbody>
     </table>
     <a class="btn span2" href="{{site_url()}}device/edit/0">新增</a>
+    <a class="btn span2 btn-danger input-medium" href="{{site_url()}}device/del" name="multi-del">删除</a>
     {{pagination|raw}}
 </div>
 

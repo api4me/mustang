@@ -18,6 +18,7 @@
     <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
+            <th>{{form_checkbox('checkall')|raw}}</th>
             <th>#</th>
             <th>名称</th>
             <th>简称</th>
@@ -29,6 +30,7 @@
     <tbody>
     {% for item in store %}
         <tr>
+            <td>{{form_checkbox('check', item.STORE_OID)|raw}}</td>
             <td>{{loop.index + search.start}}</td>
             <td><a href="{{site_url()}}store/edit/{{item.STORE_OID}}" title="编辑">{{item.STORE_NAME}}</a></td>
             <td>{{item.STORE_SRT_NAME}}</td>
@@ -42,6 +44,7 @@
     </tbody>
     </table>
     <a class="btn span2" href="{{site_url()}}store/edit/0">新增</a>
+    <a class="btn span2 btn-danger input-medium" href="{{site_url()}}store/del" name="multi-del">删除</a>
     {{pagination|raw}}
 </div>
 

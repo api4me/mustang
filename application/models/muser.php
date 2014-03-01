@@ -131,6 +131,18 @@ class MUser extends CI_Model {
         return false;
     }
 /*}}}*/
+/*{{{ del */
+    public function del($id) {
+        $this->db->set('USER_STATUS', MA_STATUS_D);
+        $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
+        $this->db->set('UPD_DATE', 'now()', false);
+        $this->db->where_in('USER_OID', $id);
+        if (!$this->db->update('USER_PROFILE')) {
+            return false;
+        }
 
+        return true;
+    }
+/*}}}*/
 
 }

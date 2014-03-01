@@ -142,7 +142,7 @@ class MCompany extends CI_Model {
 /*}}}*/
 /*{{{ del */
     public function del($id) {
-        // TODO delete relation table
+        // Do not dele the relation table for prevent making a mistake
         $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
         $this->db->set('UPD_DATE', 'now()', false);
         $param['COMPANY_STATUS'] = MA_STATUS_D;

@@ -138,14 +138,7 @@ class Param extends Ma_Controller {
     }
 /*}}}*/
 /*{{{ del */
-    public function del($id = 0) {
-        $user = $this->lsession->get('user');
-        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
-            $this->index();
-
-            return false;
-        }
-
+    public function del() {
         $out = array();
         $this->output->set_content_type('application/json');
         if (!$this->input->is_ajax_request()) {
@@ -156,13 +149,11 @@ class Param extends Ma_Controller {
             return false;
         }
 
-        $param = array();
-
-        $this->load->model('mstore');
-        if ($cid = $this->mstore->del($id)) {
+        $ids = $this->input->get_post('ids');
+        $this->load->model('mctrlparam');
+        if ($this->mctrlparam->del($ids)) {
             $out['status'] = 0;
             $out['msg'] = '删除成功';
-            $out['id'] = $cid;
             $this->output->set_output(json_encode($out));
 
             return true;

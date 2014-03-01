@@ -14,8 +14,8 @@ class MFirstlevelcatg extends CI_Model {
 
 /*{{{ load_by_store */
     public function load_by_store($sid) {
-        $q = 'SELECT FLC_OID, FLC_CODE, FLC_NAME, FLC_DESCR, DISP_SEQ, STORE_OID, UPD_DATE FROM FIRST_LEVEL_CATG WHERE STORE_OID=?';
-        $query = $this->db->query($q, $sid);
+        $q = 'SELECT FLC_OID, FLC_CODE, FLC_NAME, FLC_DESCR, DISP_SEQ, STORE_OID, UPD_DATE FROM FIRST_LEVEL_CATG WHERE STORE_OID=? AND FLC_STATUS<>?';
+        $query = $this->db->query($q, array($sid, MA_STATUS_D));
 
         return $query->result();
     }
@@ -145,15 +145,34 @@ class MFirstlevelcatg extends CI_Model {
 /*}}}*/
 /*{{{ del */
     public function del($id) {
-        // TODO delete relation table
+        $this->db->trans_start();
+        // SECOND_LEVEL_DISHES
+        $this->db->where_in('FLC_OID', $id);
+        if (!$this->db->delete('SECOND_LEVEL_DISHES')) {
+            $this->db->trans_rollback();
+            return false;
+        }
+        // SECOND LEVEL CATEGORY
+        $this->db->set('SLC_STATUS', MA_STATUS_D);
         $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
         $this->db->set('UPD_DATE', 'now()', false);
-        $param['COMPANY_STATUS'] = MA_STATUS_D;
-        if ($this->db->update('COMPANY', $param, array('COMPANY_OID'=>$id))) {
-            return true;
+        $this->db->where_in('FLC_OID', $id);
+        if (!$this->db->update('SECOND_LEVEL_CATG')) {
+            $this->db->trans_rollback();
+            return false;
         }
+        // First LEVEL CATEGORY
+        $this->db->set('FLC_STATUS', MA_STATUS_D);
+        $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
+        $this->db->set('UPD_DATE', 'now()', false);
+        $this->db->where_in('FLC_OID', $id);
+        if (!$this->db->update('FIRST_LEVEL_CATG')) {
+            $this->db->trans_rollback();
+            return false;
+        }
+        $this->db->trans_complete();
 
-        return false;
+        return true;
     }
 /*}}}*/
 

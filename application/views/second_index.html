@@ -23,6 +23,7 @@
     <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
+            <th>{{form_checkbox('checkall')|raw}}</th>
             <th>#</th>
             <th>分类名称</th>
             <th>分类编码</th>
@@ -36,6 +37,7 @@
     <tbody>
     {% for item in second %}
         <tr>
+            <td>{{form_checkbox('check', item.SLC_OID)|raw}}</td>
             <td>{{loop.index + search.start}}</td>
             <td><a href="{{site_url()}}second/edit/{{item.SLC_OID}}" title="编辑">{{item.SLC_NAME}}</a></td>
             <td>{{item.SLC_CODE}}</td>
@@ -51,6 +53,7 @@
     </tbody>
     </table>
     <a class="btn span2" href="{{site_url()}}second/edit/0">新增</a>
+    <a class="btn span2 btn-danger input-medium" href="{{site_url()}}second/del" name="multi-del">删除</a>
     {{pagination|raw}}
 </div>
 

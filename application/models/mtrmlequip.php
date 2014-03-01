@@ -84,15 +84,12 @@ class MTrmlequip extends CI_Model {
 /*}}}*/
 /*{{{ del */
     public function del($id) {
-        // TODO delete relation table
-        $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
-        $this->db->set('UPD_DATE', 'now()', false);
-        $param['COMPANY_STATUS'] = MA_STATUS_D;
-        if ($this->db->update('COMPANY', $param, array('COMPANY_OID'=>$id))) {
-            return true;
+        $this->db->where_in('SERL_NBR', $id);
+        if (!$this->db->delete('TRML_EQUIP')) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 /*}}}*/
 

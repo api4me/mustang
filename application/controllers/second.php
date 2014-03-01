@@ -156,44 +156,6 @@ class Second extends Ma_Controller {
         return true;
     }
 /*}}}*/
-/*{{{ del */
-    public function del($id = 0) {
-        $user = $this->lsession->get('user');
-        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
-            $this->index();
-
-            return false;
-        }
-
-        $out = array();
-        $this->output->set_content_type('application/json');
-        if (!$this->input->is_ajax_request()) {
-            $out["status"] = 1;
-            $out["msg"] = "系统忙，请稍后...";
-            $this->output->set_output(json_encode($out));
-
-            return false;
-        }
-
-        $param = array();
-
-        $this->load->model('mstore');
-        if ($cid = $this->mstore->del($id)) {
-            $out['status'] = 0;
-            $out['msg'] = '删除成功';
-            $out['id'] = $cid;
-            $this->output->set_output(json_encode($out));
-
-            return true;
-        }
-
-        $out['status'] = 1;
-        $out['msg'] = '删除失败';
-        $this->output->set_output(json_encode($out));
-
-        return false;
-    }
-/*}}}*/
 /*{{{ _select */
     public function _select($str) {
         if (!$str) {
@@ -229,6 +191,35 @@ class Second extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return true;
+    }
+/*}}}*/
+/*{{{ del */
+    public function del() {
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $ids = $this->input->get_post('ids');
+        $this->load->model('msecondlevelcatg');
+        if ($this->msecondlevelcatg->del($ids)) {
+            $out['status'] = 0;
+            $out['msg'] = '删除成功';
+            $this->output->set_output(json_encode($out));
+
+            return true;
+        }
+
+        $out['status'] = 1;
+        $out['msg'] = '删除失败';
+        $this->output->set_output(json_encode($out));
+
+        return false;
     }
 /*}}}*/
 

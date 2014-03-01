@@ -152,15 +152,18 @@ class First extends Ma_Controller {
         return true;
     }
 /*}}}*/
-/*{{{ del */
-    public function del($id = 0) {
-        $user = $this->lsession->get('user');
-        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
-            $this->index();
-
+/*{{{ _select */
+    public function _select($str) {
+        if (!$str) {
+            $this->form_validation->set_message(__FUNCTION__, '%s 须选择');
             return false;
         }
 
+        return true;
+    }
+/*}}}*/
+/*{{{ del */
+    public function del() {
         $out = array();
         $this->output->set_content_type('application/json');
         if (!$this->input->is_ajax_request()) {
@@ -171,13 +174,11 @@ class First extends Ma_Controller {
             return false;
         }
 
-        $param = array();
-
-        $this->load->model('mstore');
-        if ($cid = $this->mstore->del($id)) {
+        $ids = $this->input->get_post('ids');
+        $this->load->model('mfirstlevelcatg');
+        if ($this->mfirstlevelcatg->del($ids)) {
             $out['status'] = 0;
             $out['msg'] = '删除成功';
-            $out['id'] = $cid;
             $this->output->set_output(json_encode($out));
 
             return true;
@@ -188,16 +189,6 @@ class First extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return false;
-    }
-/*}}}*/
-/*{{{ _select */
-    public function _select($str) {
-        if (!$str) {
-            $this->form_validation->set_message(__FUNCTION__, '%s 须选择');
-            return false;
-        }
-
-        return true;
     }
 /*}}}*/
 

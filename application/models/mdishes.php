@@ -344,15 +344,42 @@ class MDishes extends CI_Model {
 /*}}}*/
 /*{{{ del */
     public function del($id) {
-        // TODO delete relation table
+        $this->db->trans_start();
+        // SECOND_LEVEL_DISHES
+        $this->db->where_in('DISH_OID', $id);
+        if (!$this->db->delete('SECOND_LEVEL_DISHES')) {
+            $this->db->trans_rollback();
+            return false;
+        }
+        // DISH_PICTURE
+        $this->db->where_in('DISH_OID', $id);
+        $query = $this->db->get('DISH_PICTURE');
+        $images = $query->result();
+
+        $this->db->where_in('DISH_OID', $id);
+        if (!$this->db->delete('DISH_PICTURE')) {
+            $this->db->trans_rollback();
+            return false;
+        }
+        // STORE_DISHES
+        $this->db->set('DISH_STATUS', MA_STATUS_D);
         $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
         $this->db->set('UPD_DATE', 'now()', false);
-        $param['COMPANY_STATUS'] = MA_STATUS_D;
-        if ($this->db->update('COMPANY', $param, array('COMPANY_OID'=>$id))) {
-            return true;
+        $this->db->where_in('DISH_OID', $id);
+        if (!$this->db->update('DISHES')) {
+            $this->db->trans_rollback();
+            return false;
         }
+        $this->db->trans_complete();
 
-        return false;
+        // Delete pic
+        if ($images) {
+            foreach ($images as $key => $val) {
+                $this->load->library('limage');
+                $this->limage->del($val->PIC_URL);
+            }
+        }
+        return true;
     }
 /*}}}*/
 

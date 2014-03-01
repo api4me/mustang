@@ -16,6 +16,7 @@
     <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
+            <th>{{form_checkbox('checkall')|raw}}</th>
             <th>#</th>
             <th>参数编码</th>
             <th>值</th>
@@ -25,6 +26,7 @@
     <tbody>
     {% for item in param %}
         <tr>
+            <td>{{form_checkbox('check', item.PARAM_OID)|raw}}</td>
             <td>{{loop.index + search.start}}</td>
             <td><a href="{{site_url()}}param/edit/{{item.PARAM_OID}}" title="编辑">{{item.PARAM_CODE}}</a></td>
             <td>{{item.STRING_VALUE}} </td>
@@ -36,6 +38,7 @@
     </tbody>
     </table>
     <a class="btn span2" href="{{site_url()}}param/edit/0">新增</a>
+    <a class="btn span2 btn-danger input-medium" href="{{site_url()}}param/del" name="multi-del">删除</a>
     {{pagination|raw}}
 </div>
 

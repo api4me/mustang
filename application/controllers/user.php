@@ -172,44 +172,6 @@ class User extends Ma_Controller {
         return true;
     }
 /*}}}*/
-/*{{{ del */
-    public function del($id = 0) {
-        $user = $this->lsession->get('user');
-        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
-            $this->index();
-
-            return false;
-        }
-
-        $out = array();
-        $this->output->set_content_type('application/json');
-        if (!$this->input->is_ajax_request()) {
-            $out["status"] = 1;
-            $out["msg"] = "系统忙，请稍后...";
-            $this->output->set_output(json_encode($out));
-
-            return false;
-        }
-
-        $param = array();
-
-        $this->load->model('mcompany');
-        if ($cid = $this->mcompany->del($id)) {
-            $out['status'] = 0;
-            $out['msg'] = '删除成功';
-            $out['id'] = $cid;
-            $this->output->set_output(json_encode($out));
-
-            return true;
-        }
-
-        $out['status'] = 1;
-        $out['msg'] = '删除失败';
-        $this->output->set_output(json_encode($out));
-
-        return false;
-    }
-/*}}}*/
 /*{{{ reset */
     public function reset() {
         $user = $this->lsession->get('user');
@@ -252,6 +214,42 @@ class User extends Ma_Controller {
 
         $out['status'] = 1;
         $out['msg'] = '保存失败';
+        $this->output->set_output(json_encode($out));
+
+        return false;
+    }
+/*}}}*/
+/*{{{ del */
+    public function del() {
+        $user = $this->lsession->get('user');
+        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
+            $this->index();
+
+            return false;
+        }
+
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $ids = $this->input->get_post('ids');
+        $this->load->model('muser');
+        if ($this->muser->del($ids)) {
+            $out['status'] = 0;
+            $out['msg'] = '删除成功';
+            $this->output->set_output(json_encode($out));
+
+            return true;
+        }
+
+        $out['status'] = 1;
+        $out['msg'] = '删除失败';
         $this->output->set_output(json_encode($out));
 
         return false;

@@ -174,7 +174,6 @@ class Store extends Ma_Controller {
         if ($cid = $this->mstore->del($id)) {
             $out['status'] = 0;
             $out['msg'] = '删除成功';
-            $out['id'] = $cid;
             $this->output->set_output(json_encode($out));
 
             return true;
