@@ -72,7 +72,7 @@ class MDishes extends CI_Model {
             , DP.IS_DISP
             , DP.DISH_OID
             FROM DISH_PICTURE DP
-            INNER JOIN STORE_DISHES SD ON SD.DISH_OID=DP.DISH_OID AND SD.DISH_OID=?
+            INNER JOIN STORE_DISHES SD ON SD.DISH_OID=DP.DISH_OID AND SD.STORE_OID=?
         ';
         $query = $this->db->query($q, array($id));
         return $query->result();
