@@ -126,6 +126,9 @@ class Second extends Ma_Controller {
         $param['SLC_DESCR'] = $this->input->post('slc-descr');
         $param['DISP_SEQ'] = $this->input->post('disp-seq');
         $param['FLC_OID'] = $this->input->post('flc-oid');
+        if (!$param['DISP_SEQ']) {
+            $param['DISP_SEQ'] = 0;
+        }
         $this->load->model('msecondlevelcatg');
         if ($cid = $this->msecondlevelcatg->save($param, $id)) {
             $out['status'] = 0;

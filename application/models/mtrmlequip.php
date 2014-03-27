@@ -28,14 +28,11 @@ class MTrmlequip extends CI_Model {
 
 /*{{{ load_all */
     private function _where($param) {
-        if (@$param['STORE_CODE']) {
-            $this->db->like('STORE.STORE_CODE', $param['STORE_CODE']);
-        }
         if (@$param['STORE_OID']) {
             $this->db->where('STORE.STORE_OID', $param['STORE_OID']);
         }
         if (@$param['SERL_NBR']) {
-            $this->db->where('SERL_NBR', $param['SERL_NBR']);
+            $this->db->like('SERL_NBR', $param['SERL_NBR']);
         }
     }
     public function load_all_by_company($param, $cid) {

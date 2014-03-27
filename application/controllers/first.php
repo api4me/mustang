@@ -122,6 +122,9 @@ class First extends Ma_Controller {
         $param['FLC_DESCR'] = $this->input->post('flc-descr');
         $param['DISP_SEQ'] = $this->input->post('disp-seq');
         $param['STORE_OID'] = $this->input->post('store-oid');
+        if (!$param['DISP_SEQ']) {
+            $param['DISP_SEQ'] = 0;
+        }
         $this->load->model('mfirstlevelcatg');
         if ($cid = $this->mfirstlevelcatg->save($param, $id)) {
             $out['status'] = 0;

@@ -33,7 +33,6 @@ class Device extends Ma_Controller {
 
         $search = array();
         if ($this->input->post()) {
-            $search['STORE_CODE'] = $this->input->get_post('store-code');
             $search['STORE_OID'] = $this->input->get_post('store-oid');
             $search['SERL_NBR'] = $this->input->get_post('serl-nbr');
             $this->lsession->set('device_search', $search);
@@ -105,7 +104,7 @@ class Device extends Ma_Controller {
 
         // Validate
         $rules = array(
-            array('field' => 'serl-nbr', 'label' => '序列号', 'rules' => 'trim|required'),
+            array('field' => 'serl-nbr', 'label' => '序列号', 'rules' => 'trim|required|alpha_numeric'),
             array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'trim|required'),
         );
         $this->load->library('form_validation');
