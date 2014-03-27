@@ -284,7 +284,7 @@ ul.nav-list {
     background: #f60;
     top: 40px;
     right: 0;
-    width: 20px;
+    width: 100%;
     opacity: 0;
     filter: alpha(opacity=0);
 }
