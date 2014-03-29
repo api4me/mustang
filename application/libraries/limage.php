@@ -44,8 +44,8 @@ class LImage {
         $config['upload_path'] = $this->folder['tmp'];
         $config['allowed_types'] = 'gif|jpg|png';
         $config['max_size'] = 2*1024*1024;
-        $config['max_width'] = '1200';
-        $config['max_height'] = '800';
+        $config['max_width'] = '1024';
+        $config['max_height'] = '768';
         $config['remove_spaces'] = true;
         $config['encrypt_name'] = true;
 
@@ -61,20 +61,8 @@ class LImage {
         }
         $upload = $this->CI->upload->data();
 
-        // Thumb
-        $config = array();
-        $config['source_image'] = $upload['full_path'];
-        $config['create_thumb'] = true;
-        $config['maintain_ratio'] = true;
-        $config['width'] = 150;
-        $config['height'] = 100;
-        $config['master_dim'] = (($upload['image_width']/$upload['image_height']) > ($config['width']/$config['height'])) ? 'width' : 'height';
-        $config['thumb_marker'] = '_i';
-        $this->CI->load->library('image_lib', $config);
-        $this->CI->image_lib->resize();
-
         $out['status'] = 0;
-        $out['name'] = $upload['raw_name'] . '_i' . $upload['file_ext'];
+        $out['name'] = $upload['raw_name'] . $upload['file_ext'];
         $out['title'] = substr($upload['orig_name'], 0, -strlen($upload['file_ext']));
         $out['show'] = sprintf('%s/%s', $this->folder['tmp-show'], $out['name']) ;
         $out['msg'] = '上传成功';
@@ -91,26 +79,13 @@ class LImage {
     public function move($name) {
         $name = array_pop(explode('/', $name));
         // Original and thumbnail
-        if ($pos = strrpos($name, '.')) {
-            if (substr($name, $pos-2, 2) == '_i') {
-                $name = substr($name, 0, $pos - 2) . substr($name, $pos);
-            }
-        }
-        $tmp = explode('.', $name);
-        if (count($tmp) > 1) {
-            $tmp[count($tmp) - 2] .= '_i';
-        }
-        $thumbnail = implode('.', $tmp);
-        $file = array($name, $thumbnail);
-        foreach ($file as $f) {
-            $from = sprintf('%s/%s', $this->folder['tmp'], $f);
-            if (!file_exists($from)) {
-                log_message('error', sprintf('File(%s) is not exists in image temp fold.', $f));
-                continue;
-            }
-            $to = sprintf('%s/%s', $this->folder['real'], $f);
+        $from = sprintf('%s/%s', $this->folder['tmp'], $name);
+        if (!file_exists($from)) {
+            log_message('error', sprintf('File(%s) is not exists in image temp fold.', $name));
+        } else {
+            $to = sprintf('%s/%s', $this->folder['real'], $name);
             if (!rename($from, $to)) {
-                log_message('error', sprintf('File(%s) can not be move.', $f));
+                log_message('error', sprintf('File(%s) can not be move.', $name));
             }
         }
 
@@ -125,18 +100,7 @@ class LImage {
 /*{{{ del */
     public function del($name) {
         $name = array_pop(explode('/', $name));
-        $file = array();
-        list($file['raw_name'], $file['file_ext']) = explode('.', $name);
-        if (substr($file['raw_name'], -2) == '_i') {
-            $file['thumb_name'] = $file['raw_name'] . '.' . $file['file_ext'];
-            $file['file_name'] = substr($file['raw_name'], 0, -2) . '.' . $file['file_ext'];
-        } else {
-            $file['thumb_name'] = $file['raw_name'] . '_i.' . $file['file_ext'];
-            $file['file_name'] = $file['raw_name'] . '.' . $file['file_ext'];
-        }
-
-        @unlink($this->folder['real'] . '/' . $file['thumb_name']);
-        @unlink($this->folder['real'] . '/' . $file['file_name']);
+        @unlink($this->folder['real'] . '/' . $name);
 
         $out = array();
         $out['status'] = 0;

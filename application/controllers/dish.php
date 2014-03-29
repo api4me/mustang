@@ -210,20 +210,14 @@ class Dish extends Ma_Controller {
             if ($tmp = $this->mdishes->load_image($id, $this->cid)) {
                 foreach($tmp as $val) {
                     $file = array();
-                    list($file['raw_name'], $file['file_ext']) = explode('.', $val->PIC_URL);
-                    if (substr($file['raw_name'], -2) != '_i') {
-                        $thumbnail = $file['raw_name'] . '_i.' . $file['file_ext'];
-                    } else {
-                        $thumbnail = $val->PIC_URL;
-                    }
 
                     $out['image'][] = array(
-                        'ori' => $thumbnail,
-                        'name' => $thumbnail,
+                        'ori' => $val->PIC_URL,
+                        'name' => $val->PIC_URL,
                         'title' => $val->PIC_NAME,
                         'title' => $val->PIC_NAME,
                         'descr' => $val->PIC_DESCR,
-                        'show' => base_url() . $thumbnail,
+                        'show' => base_url() . $val->PIC_URL,
                         'default' => $val->IS_DFLT,
                         'disp' => $val->IS_DISP,
                     );
@@ -286,8 +280,6 @@ class Dish extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return false;
-
-
     }
 /*}}}*/
 /*{{{ del */
