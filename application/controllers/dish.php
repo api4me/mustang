@@ -80,16 +80,17 @@ class Dish extends Ma_Controller {
         
         $param = array();
         $this->load->model('mstore');
-        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
-        $param['first'] = $this->lcommon->insert_blank(array());
-        $param['second'] = $this->lcommon->insert_blank(array());
+        $param['store'] = $this->mstore->load_for_dish_kv($this->cid);
         $param['prom'] = $this->lcommon->insert_blank($this->lcommon->option('yesno'));
         $param['new'] = $this->lcommon->insert_blank($this->lcommon->option('yesno'));
         $out['param'] = $param;
 
         $this->load->model('mdishes');
         if ($id) {
-            $out['dish'] = $this->mdishes->load($id, $this->cid);
+            if ($tmp = $this->mdishes->load($id, $this->cid)) {
+                $out['dish'] = $tmp['dish'];
+                $out['store'] = $tmp['store'];
+            }
         }
         $this->twig->display('dish_edit.html', $out);
 
@@ -113,9 +114,9 @@ class Dish extends Ma_Controller {
             array('field' => 'dish-code', 'label' => '编码', 'rules' => 'trim|required|callback__check_code'),
             array('field' => 'dish-name', 'label' => '名称', 'rules' => 'trim|required'),
             array('field' => 'disp-seq', 'label' => '展示顺序', 'rules' => 'integer'),
-            array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'trim|callback__select'),
-            array('field' => 'flc-oid', 'label' => '所属一级分类', 'rules' => 'trim|callback__select'),
-            array('field' => 'slc-oid', 'label' => '所属二级分类', 'rules' => 'trim|callback__select'),
+            array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'callback__select'),
+            array('field' => 'flc-oid', 'label' => '所属一级分类', 'rules' => 'callback__select'),
+            array('field' => 'slc-oid', 'label' => '所属二级分类', 'rules' => 'callback__select'),
             array('field' => 'orig-cost', 'label' => '原价', 'rules' => 'trim|required|callback__decimal'),
             array('field' => 'cur-cost', 'label' => '现价', 'rules' => 'trim|required|callback__decimal'),
         );

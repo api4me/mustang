@@ -74,6 +74,26 @@ class MStore extends CI_Model {
         return $out;
     }
 /*}}}*/
+/*{{{ load_for_dish_kv */
+    public function load_for_dish_kv($cid) {
+        $out = array();
+        $q = 'SELECT S.STORE_OID, S.STORE_NAME, FLC.FLC_OID, FLC.FLC_NAME
+            FROM STORE S
+            LEFT JOIN FIRST_LEVEL_CATG FLC ON FLC.STORE_OID=S.STORE_OID AND FLC.FLC_STATUS<>?
+            WHERE S.STORE_STATUS<>? AND S.COMPANY_OID=?
+        ';
+
+        $query = $this->db->query($q, array(MA_STATUS_D, MA_STATUS_D, $cid));
+        if ($tmp = $query->result()) {
+            foreach ($tmp as $val) {
+                $out[$val->STORE_OID]['name'] = $val->STORE_NAME;
+                $out[$val->STORE_OID]['first'][$val->FLC_OID] = $val->FLC_NAME;
+            }
+        }
+
+        return $out;
+    }
+/*}}}*/
 
 /*{{{ load_all_by_company */
     private function _where($param) {

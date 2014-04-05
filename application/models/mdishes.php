@@ -137,6 +137,8 @@ class MDishes extends CI_Model {
 /*}}}*/
 /*{{{ load */
     public function load($id, $cid) {
+        $out = array();
+
         $q = 'SELECT D.*, SLC.SLC_OID, FLC.FLC_OID, S.STORE_OID, SLD.DISP_SEQ
             FROM DISHES D
             INNER JOIN SECOND_LEVEL_DISHES SLD ON SLD.DISH_OID=D.DISH_OID
@@ -146,8 +148,16 @@ class MDishes extends CI_Model {
             WHERE D.DISH_OID=? AND D.DISH_STATUS <>?
         ';
         $query = $this->db->query($q, array(MA_STATUS_D, MA_STATUS_D, $cid, MA_STATUS_D, $id, MA_STATUS_D));
+        if ($tmp = $query->result()) {
+            foreach ($tmp as $val) {
+                if (!isset($out['dish'])) {
+                    $out['dish'] = $val;
+                }
+                $out['store'][$val->STORE_OID] = $val;
+            }
+        }
 
-        return $query->row();
+        return $out;
     }
 /*}}}*/
 /*{{{ not_exists */
@@ -189,17 +199,26 @@ class MDishes extends CI_Model {
 
             // Insert dish vs second level
             $param['sld']['DISH_OID'] = $id;
-            if (!$this->db->insert('SECOND_LEVEL_DISHES', $param['sld'])) {
-                $this->db->trans_rollback();
+            foreach ($param['sld']['SLC_OID'] as $val) {
+                $tmp = $param['sld'];
+                $tmp['SLC_OID'] = $val;
+                if (!$this->db->insert('SECOND_LEVEL_DISHES', $tmp)) {
+                    $this->db->trans_rollback();
 
-                return false;
+                    return false;
+                }
             }
 
             // Insert store vs dish 
-            if (!$this->db->insert('STORE_DISHES', $param['sd'])) {
-                $this->db->trans_rollback();
+            $param['sd']['DISH_OID'] = $id;
+            foreach ($param['sd']['STORE_OID'] as $val) {
+                $tmp = $param['sd'];
+                $tmp['STORE_OID'] = $val;
+                if (!$this->db->insert('STORE_DISHES', $param['sd'])) {
+                    $this->db->trans_rollback();
 
-                return false;
+                    return false;
+                }
             }
 
             $this->db->trans_complete();
@@ -217,23 +236,30 @@ class MDishes extends CI_Model {
             }
 
             $this->db->delete('SECOND_LEVEL_DISHES', array(
-                'SLC_OID'=> $param['sld']['SLC_OID'], 
                 'DISH_OID'=> $param['sld']['DISH_OID'], 
             ));
-            if (!$this->db->insert('SECOND_LEVEL_DISHES', $param['sld'])) {
-                $this->db->trans_rollback();
+            foreach ($param['sld']['SLC_OID'] as $key => $val) {
+                $tmp = $param['sld'];
+                $tmp['SLC_OID'] = $val;
+                $tmp['FLC_OID'] = $param['sld']['FLC_OID'][$key];
+                if (!$this->db->insert('SECOND_LEVEL_DISHES', $tmp)) {
+                    $this->db->trans_rollback();
 
-                return false;
+                    return false;
+                }
             }
 
             $this->db->delete('STORE_DISHES', array(
-                'STORE_OID'=> $param['sd']['STORE_OID'], 
                 'DISH_OID'=> $param['sd']['DISH_OID'], 
             ));
-            if (!$this->db->insert('STORE_DISHES', $param['sd'])) {
-                $this->db->trans_rollback();
+            foreach ($param['sd']['STORE_OID'] as $val) {
+                $tmp = $param['sd'];
+                $tmp['STORE_OID'] = $val;
+                if (!$this->db->insert('STORE_DISHES', $tmp)) {
+                    $this->db->trans_rollback();
 
-                return false;
+                    return false;
+                }
             }
 
             $this->db->trans_complete();
