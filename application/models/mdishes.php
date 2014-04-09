@@ -272,7 +272,7 @@ class MDishes extends CI_Model {
 /*}}}*/
 /*{{{ load_image */
     public function load_image($id, $cid) {
-        $q = 'SELECT DP.PIC_OID
+        $q = 'SELECT DISTINCT DP.PIC_OID
             , DP.PIC_NAME
             , DP.PIC_DESCR
             , DP.PIC_URL
