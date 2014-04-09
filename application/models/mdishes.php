@@ -44,7 +44,7 @@ class MDishes extends CI_Model {
             FROM SECOND_LEVEL_DISHES SLD
             INNER JOIN FIRST_LEVEL_CATG FLC ON SLD.FLC_OID=FLC.FLC_OID AND FLC.STORE_OID=? AND FLC.FLC_STATUS<>?
         ';
-        $query = $this->db->query($q, array($id, M_STATUS_D));
+        $query = $this->db->query($q, array($id, MA_STATUS_D));
         return $query->result();
     }
 /*}}}*/
