@@ -150,7 +150,7 @@ class Store extends Ma_Controller {
     }
 /*}}}*/
 /*{{{ del */
-    public function del($id = 0) {
+    public function del() {
         $user = $this->lsession->get('user');
         if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
             $this->index();
@@ -171,7 +171,12 @@ class Store extends Ma_Controller {
         $param = array();
 
         $this->load->model('mstore');
-        if ($cid = $this->mstore->del($id)) {
+        if ($ids = $this->input->get_post('ids')) {
+            $ids = array_filter($ids, function($val){
+                return is_numeric($val);
+            });
+        }
+        if ($cid = $this->mstore->del($ids)) {
             $out['status'] = 0;
             $out['msg'] = '删除成功';
             $this->output->set_output(json_encode($out));

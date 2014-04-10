@@ -20,7 +20,7 @@ class MTrmlequip extends CI_Model {
             INNER JOIN COMPANY C ON C.COMPANY_OID=S.COMPANY_OID AND C.COMPANY_STATUS<>?
             WHERE TE.SERL_NBR=? AND TE.IS_ENABLED=?
             ';
-        $query = $this->db->query($q, array(MA_ENABLE_Y, MA_ENABLE_Y, $serial, MA_ENABLE_Y));
+        $query = $this->db->query($q, array(MA_ENABLE_Y, MA_ENABLE_Y, strval($serial), MA_ENABLE_Y));
 
         return $query->row();
     }

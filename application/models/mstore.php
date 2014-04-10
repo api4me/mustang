@@ -194,7 +194,7 @@ class MStore extends CI_Model {
         $this->db->set('UPD_BY', $this->lsession->get('user')->USER_OID);
         $this->db->set('UPD_DATE', 'now()', false);
         $this->db->set('STORE_STATUS', MA_STATUS_D);
-        $this->db->where_in($id);
+        $this->db->where_in('STORE_OID', $id);
         if ($this->db->update('STORE')) {
             return true;
         }
