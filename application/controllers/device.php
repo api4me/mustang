@@ -105,7 +105,8 @@ class Device extends Ma_Controller {
         // Validate
         $rules = array(
             array('field' => 'serl-nbr', 'label' => '序列号', 'rules' => 'trim|required|alpha_numeric'),
-            array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'trim|required'),
+            array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'callback__select'),
+            array('field' => 'is-enabled', 'label' => '是否可用', 'rules' => 'callback__select'),
         );
         $this->load->library('form_validation');
         $this->form_validation->set_rules($rules);
@@ -136,6 +137,29 @@ class Device extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return false;
+    }
+/*}}}*/
+/*{{{ _select */
+    public function _select($str) {
+        if (!$str) {
+            $this->form_validation->set_message(__FUNCTION__, '%s 须选择');
+            return false;
+        }
+
+        return true;
+    }
+/*}}}*/
+/*{{{ _check_code */
+    public function _check_code($str) {
+        $this->load->model('mtrmlequip');
+        $id = $this->input->get_post('id');
+        if (!$this->mtrmlequip->not_exists($str, $id, $this->cid)) {
+            $this->form_validation->set_message(__FUNCTION__, '序列号 已经存在，请换一个。');
+
+            return false;
+        }
+
+        return true;
     }
 /*}}}*/
 /*{{{ del */

@@ -72,6 +72,19 @@ class MTrmlequip extends CI_Model {
         return $query->row();
     }
 /*}}}*/
+/*{{{ not_exists */
+    public function not_exists($str, $id, $cid) {
+        $q = 'SELECT SERL_NBR 
+            FROM TRML_EQUIP 
+            WHERE SERL_NBR=? ';
+        $query = $this->db->query($q, array($str));
+        if ($tmp = $query->row()) {
+            return false;
+        }
+
+        return true;
+    }
+/*}}}*/
 /*{{{ save */
     public function save($param, $id) {
         $q = 'REPLACE INTO TRML_EQUIP(`SERL_NBR`, `IS_ENABLED`, `STORE_OID`, `IS_UPLOAD_BEHAVIORAL`) VALUES(?, ?, ?, ?)';

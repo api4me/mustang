@@ -151,13 +151,6 @@ class Store extends Ma_Controller {
 /*}}}*/
 /*{{{ del */
     public function del() {
-        $user = $this->lsession->get('user');
-        if ($user->USER_TYPE != MA_USER_TYPE_SUPER) {
-            $this->index();
-
-            return false;
-        }
-
         $out = array();
         $this->output->set_content_type('application/json');
         if (!$this->input->is_ajax_request()) {

@@ -25,15 +25,19 @@ class MUser extends CI_Model {
         $query = $this->db->get();
         if ($query->num_rows() == 1) {
             if ($out = $query->row()) {
-                $this->lsession->set('user', $out);
-                // Set login time
-                $param = array();
-                $this->db->set('PRE_LOGIN_DATE', 'LOGIN_DATE', false);
-                $this->db->set('LOGIN_DATE', 'now()', false);
-                $this->db->set('FAILED_ATTEMPT', 0);
-                $this->save($param, $out->LOGIN_ID);
+                if ($out->USER_TYPE == MA_USER_TYPE_SUPER 
+                    || ($out->USER_TYPE == MA_USER_TYPE_ADMIN && $out->COMPANY_OID > 0)) {
+                    $this->lsession->set('user', $out);
+                    // Set login time
+                    $param = array();
+                    $this->db->set('PRE_LOGIN_DATE', 'LOGIN_DATE', false);
+                    $this->db->set('LOGIN_DATE', 'now()', false);
+                    $this->db->set('FAILED_ATTEMPT', 0);
+                    $this->save($param, $out->LOGIN_ID);
+
+                    return $out;
+                }
             }
-            return $out;
         }
 
         return false;

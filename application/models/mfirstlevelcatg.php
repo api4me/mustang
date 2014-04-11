@@ -165,16 +165,18 @@ class MFirstlevelcatg extends CI_Model {
         $this->db->delete('STORE_FIRST_LEVEL', array(
             'FLC_OID'=> $id, 
         ));
-        foreach ($store as $val) {
-            $param = array(
-                'STORE_OID' => $val,
-                'FLC_OID' => $id,
-                'COMPANY_OID' => $cid,
-            );
-            if (!$this->db->insert('STORE_FIRST_LEVEL', $param)) {
-                $this->db->trans_rollback();
+        if ($store) {
+            foreach ($store as $val) {
+                $param = array(
+                    'STORE_OID' => $val,
+                    'FLC_OID' => $id,
+                    'COMPANY_OID' => $cid,
+                );
+                if (!$this->db->insert('STORE_FIRST_LEVEL', $param)) {
+                    $this->db->trans_rollback();
 
-                return false;
+                    return false;
+                }
             }
         }
 
