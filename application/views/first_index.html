@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block data %}
-<div class="ma-block clearfix">
+<div class="ma-block clearfix" id="first-index-content">
     <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
@@ -38,18 +38,43 @@
             <td><a href="{{site_url()}}first/edit/{{item.FLC_OID}}" title="编辑">{{item.FLC_NAME}}</a></td>
             <td>{{item.FLC_CODE}}</td>
             <td><abbr title="{{item.FLC_DESCR}}">{{mb_substr(item.FLC_DESCR, 0, 5)}}</abbr></td>
-            <td>{{item.STORE_NAME}}</td>
+            <td><a class="edit-store" href="#" data-id="{{item.FLC_OID}}">编辑</a></td>
             <td>{{item.USER_NAME}}</td>
             <td>{{item.CRE_DATE}}</td>
         </tr>
     {% else %}
-        <tr><td colspan="7"><em>查了半天，没有数据，不如添加一条吧.</em></td></tr>
+        <tr><td colspan="8"><em>查了半天，没有数据，不如添加一条吧.</em></td></tr>
     {% endfor %}
     </tbody>
     </table>
     <a class="btn span2" href="{{site_url()}}first/edit/0">新增</a>
     <a class="btn span2 btn-danger input-medium" href="{{site_url()}}first/del" name="multi-del">删除</a>
     {{pagination|raw}}
+</div>
+
+<div id="first-modal-store" class="modal hide fade">
+    <div class="modal-header clearfix">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>菜品关联门店</h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group">
+            <div class="controls">
+            {% for key, item in param.store %}
+                {% if key %}
+                <label class="checkbox inline">
+                {{form_checkbox('store-oid', key, false, 'id="inputStore"')|raw}}{{item}}
+                </label>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    {{form_hidden('id', 0)|raw}}
+    <div class="modal-footer">
+        <button class="btn btn-primary save">保存</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
 </div>
 
 {% endblock %}

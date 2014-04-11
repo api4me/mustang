@@ -14,8 +14,11 @@ class MSecondlevelcatg extends CI_Model {
 
 /*{{{ load_by_store */
     public function load_by_store($sid) {
-        $q = 'SELECT S.SLC_OID, S.SLC_CODE, S.SLC_NAME, S.SLC_DESCR, S.DISP_SEQ, S.SLC_OID, S.UPD_DATE, S.FLC_OID FROM SECOND_LEVEL_CATG S
-        INNER JOIN FIRST_LEVEL_CATG F ON F.FLC_OID=S.FLC_OID AND F.STORE_OID=? WHERE SLC_STATUS<>?';
+        $q = 'SELECT S.SLC_OID, S.SLC_CODE, S.SLC_NAME, S.SLC_DESCR, S.DISP_SEQ, S.SLC_OID, S.UPD_DATE, S.FLC_OID 
+        FROM SECOND_LEVEL_CATG S
+        INNER JOIN FIRST_LEVEL_CATG F ON F.FLC_OID=S.FLC_OID 
+        INNER JOIN STORE_FIRST_LEVEL SFL ON SFL.FLC_OID=F.FLC_OID AND SFL.STORE_OID=?
+        WHERE S.SLC_STATUS<>?';
         $query = $this->db->query($q, array($sid, MA_STATUS_D));
 
         return $query->result();
@@ -40,11 +43,8 @@ class MSecondlevelcatg extends CI_Model {
 
 /*{{{ load_all_by_company */
     private function _where($param) {
-        if (@$param['STORE_OID']) {
-            $this->db->where('FLC.STORE_OID', $param['STORE_OID']);
-        }
         if (@$param['FLC_OID']) {
-            $this->db->where('FLC.FLC_OID', $param['FLC_OID']);
+            $this->db->where('SLC.FLC_OID', $param['FLC_OID']);
         }
         if (@$param['SLC_NAME']) {
             $this->db->like('SLC.SLC_NAME', $param['SLC_NAME']);
@@ -53,7 +53,7 @@ class MSecondlevelcatg extends CI_Model {
             $this->db->like('SLC.SLC_CODE', $param['SLC_CODE']);
         }
         if (@$param['COMPANY_OID']) {
-            $this->db->where('S.COMPANY_OID', $param['COMPANY_OID']);
+            $this->db->where('SLC.COMPANY_OID', $param['COMPANY_OID']);
         }
         $this->db->where('SLC.SLC_STATUS <>', 'd'); 
     }
@@ -63,16 +63,12 @@ class MSecondlevelcatg extends CI_Model {
         $this->_where($param);
         $this->db->select('COUNT(1) AS num');
         $this->db->from('SECOND_LEVEL_CATG SLC');
-        $this->db->join('FIRST_LEVEL_CATG FLC', 'FLC.FLC_OID=SLC.FLC_OID AND FLC.FLC_STATUS<>\'d\'');
-        $this->db->join('STORE S', 'S.STORE_OID=FLC.STORE_OID AND S.STORE_STATUS<>\'d\'');
         $query = $this->db->get();
 
         if ($num = $query->row(0)->num) {
-            $this->db->select('SLC.*, FLC.FLC_NAME, S.STORE_NAME, U.USER_NAME');
+            $this->db->select('SLC.*, U.USER_NAME');
             $this->_where($param);
             $this->db->from('SECOND_LEVEL_CATG SLC');
-            $this->db->join('FIRST_LEVEL_CATG FLC', 'FLC.FLC_OID=SLC.FLC_OID AND FLC.FLC_STATUS<>\'d\'');
-            $this->db->join('STORE S', 'S.STORE_OID=FLC.STORE_OID AND S.STORE_STATUS<>\'d\'');
             $this->db->join('USER_PROFILE U', 'U.USER_OID=SLC.CRE_BY', 'left');
             $this->db->limit($param['per_page'], $param['start']);
             $query = $this->db->get();
@@ -90,11 +86,19 @@ class MSecondlevelcatg extends CI_Model {
 /*{{{ load */
     public function load($id, $cid) {
         $this->db->from('SECOND_LEVEL_CATG SLC');
-        $this->db->join('FIRST_LEVEL_CATG FLC', 'FLC.FLC_OID=SLC.FLC_OID AND FLC.FLC_STATUS<>\'d\'');
-        $this->db->join('STORE S', "S.STORE_OID=FLC.STORE_OID AND S.COMPANY_OID={$cid} AND S.STORE_STATUS<>'d'");
-        $this->db->where('SLC.SLC_STATUS <>', MA_STATUS_D);
         $this->db->where('SLC.SLC_OID', $id);
+        $this->db->where('SLC.SLC_STATUS <>', MA_STATUS_D);
+        $this->db->where('SLC.COMPANY_OID', $cid);
         $query = $this->db->get();
+
+        return $query->row();
+    }
+/*}}}*/
+/*{{{ load_vs_category */
+    public function load_vs_category($id) {
+        $this->db->select('FLC_OID first');
+        $this->db->where('SLC_OID', $id);
+        $query = $this->db->get('SECOND_LEVEL_CATG');
 
         return $query->row();
     }
@@ -103,10 +107,8 @@ class MSecondlevelcatg extends CI_Model {
     public function not_exists($str, $id, $cid) {
         $q = 'SELECT SLC.SLC_OID 
             FROM SECOND_LEVEL_CATG SLC 
-            INNER JOIN FIRST_LEVEL_CATG FLC ON FLC.FLC_OID=SLC.FLC_OID AND FLC.FLC_STATUS<>? 
-            INNER JOIN STORE S ON S.STORE_OID=FLC.STORE_OID AND S.COMPANY_OID=? AND S.STORE_STATUS<>?
-            WHERE SLC.SLC_CODE=? AND SLC.SLC_STATUS<>?';
-        $query = $this->db->query($q, array(MA_STATUS_D, $cid, MA_STATUS_D, $str, MA_STATUS_D));
+            WHERE SLC.SLC_CODE=? AND SLC.SLC_STATUS<>? AND SLC.COMPANY_OID=?';
+        $query = $this->db->query($q, array($str, $cid, MA_STATUS_D));
         if ($tmp = $query->row()) {
             if ($tmp->SLC_OID != $id) {
                 return false;

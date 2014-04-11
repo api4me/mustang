@@ -76,7 +76,6 @@ class First extends Ma_Controller {
         
         $param = array();
         $this->load->model('mstore');
-        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
         $out['param'] = $param;
 
         $this->load->model('mfirstlevelcatg');
@@ -105,7 +104,6 @@ class First extends Ma_Controller {
             array('field' => 'flc-code', 'label' => '编码', 'rules' => 'trim|required|callback__check_code'),
             array('field' => 'flc-name', 'label' => '名称', 'rules' => 'trim|required'),
             array('field' => 'disp-seq', 'label' => '展示顺序', 'rules' => 'integer'),
-            array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'trim|callback__select'),
         );
         $this->load->library('form_validation');
         $this->form_validation->set_rules($rules);
@@ -120,8 +118,8 @@ class First extends Ma_Controller {
         $param['FLC_CODE'] = $this->input->post('flc-code');
         $param['FLC_NAME'] = $this->input->post('flc-name');
         $param['FLC_DESCR'] = $this->input->post('flc-descr');
+        $param['COMPANY_OID'] = $this->cid;
         $param['DISP_SEQ'] = $this->input->post('disp-seq');
-        $param['STORE_OID'] = $this->input->post('store-oid');
         if (!$param['DISP_SEQ']) {
             $param['DISP_SEQ'] = 0;
         }
@@ -130,6 +128,48 @@ class First extends Ma_Controller {
             $out['status'] = 0;
             $out['msg'] = '保存成功';
             $out['id'] = $cid;
+            $this->output->set_output(json_encode($out));
+
+            return true;
+        }
+
+        $out['status'] = 1;
+        $out['msg'] = '保存失败';
+        $this->output->set_output(json_encode($out));
+
+        return false;
+    }
+/*}}}*/
+/*{{{ savestore */
+    public function savestore() {
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $id = intval($this->input->get_post('id'));
+        $store = $this->input->get_post('store');
+        if (!$id) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+        if ($store) {
+            $store = array_filter($store, function($val){
+                return intval($val);
+            });
+        }
+        $this->load->model('mfirstlevelcatg');
+        if ($this->mfirstlevelcatg->savestore($store, $this->cid, $id)) {
+            $out['status'] = 0;
+            $out['msg'] = '保存成功';
             $this->output->set_output(json_encode($out));
 
             return true;
@@ -192,6 +232,34 @@ class First extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return false;
+    }
+/*}}}*/
+
+/*{{{ store */
+    public function store($id) {
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+        if (!$id) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $this->load->model('mfirstlevelcatg');
+        $out['status'] = 0;
+        $out['data'] = $this->mfirstlevelcatg->load_vs_store($id);
+        $this->output->set_output(json_encode($out));
+
+        return true;
     }
 /*}}}*/
 

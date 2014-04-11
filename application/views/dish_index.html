@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block data %}
-<div class="ma-block clearfix">
+<div id="dish-index-content" class="ma-block clearfix">
     <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
@@ -30,12 +30,11 @@
             <th>#</th>
             <th>名称</th>
             <th>编码</th>
-            <th>分类</th>
-            <th>所属门店</th>
             <th>单位</th>
-            <th>原价</th>
-            <th>现价</th>
+            <th>价格</th>
             <th>促销|推荐</th>
+            <th>所属门店</th>
+            <th>分类</th>
             <th>图片</th>
         </tr>
     </thead>
@@ -46,10 +45,7 @@
             <td>{{loop.index + search.start}}</td>
             <td><a href="{{site_url()}}dish/edit/{{item.DISH_OID}}" title="编辑">{{item.DISH_NAME}}</a></td>
             <td>{{item.DISH_CODE}}</td>
-            <td>{{item.FLC_NAME}} ~ {{item.SLC_NAME}}</td>
-            <td>{{item.STORE_NAME}}</td>
             <td>{{item.UNIT}}</td>
-            <td>{{item.ORIG_COST}}</td>
             <td>{{item.CUR_COST}}</td>
             <td>
                 {% if item.IS_PROM == constant('MA_ENABLE_Y')%}
@@ -64,16 +60,64 @@
                 <span class="label">荐</span>
                 {% endif %}
             </td>
+            <td><a class="edit-store" href="#" data-id="{{item.DISH_OID}}">编辑</a></td>
+            <td><a class="edit-category" href="#" data-id="{{item.DISH_OID}}">编辑</a></td>
             <td><a href="{{site_url()}}dish/image/{{item.DISH_OID}}" title="图片编辑">编辑</a></td>
         </tr>
     {% else %}
-        <tr><td colspan="7"><em>查了半天，没有数据，不如添加一条吧.</em></td></tr>
+        <tr><td colspan="10"><em>查了半天，没有数据，不如添加一条吧.</em></td></tr>
     {% endfor %}
     </tbody>
     </table>
     <a class="btn span2" href="{{site_url()}}dish/edit/0">新增</a>
     <a class="btn span2 btn-danger input-medium" href="{{site_url()}}dish/del" name="multi-del">删除</a>
     {{pagination|raw}}
+</div>
+
+<div id="dish-modal-store" class="modal hide fade">
+    <div class="modal-header clearfix">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>菜品关联门店</h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group">
+            <div class="controls">
+            {% for key, item in param.store %}
+                {% if key %}
+                <label class="checkbox inline">
+                {{form_checkbox('store-oid', key, false, 'id="inputStore"')|raw}}{{item}}
+                </label>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    {{form_hidden('id', 0)|raw}}
+    <div class="modal-footer">
+        <button class="btn btn-primary save">保存</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
+</div>
+
+<div id="dish-modal-category" class="modal hide fade">
+    <div class="modal-header clearfix">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>菜品关联分类</h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group offset1">
+            <label class="control-label" for="inputFirst">所属一级分类</label>
+            {{form_dropdown('flc-oid', param.first, null, 'id="inputFirst"')|raw}}
+            <label class="control-label" for="inputSecond">所属二级分类</label>
+            {{form_hidden('slc-oid', null)|raw}}
+            {{form_dropdown('slc-oid', param.second, null, 'id="inputSecond"')|raw}}
+        </div>
+    </div>
+    {{form_hidden('id', 0)|raw}}
+    <div class="modal-footer">
+        <button class="btn btn-primary save">保存</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
 </div>
 
 {% endblock %}

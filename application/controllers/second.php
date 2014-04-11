@@ -33,7 +33,6 @@ class Second extends Ma_Controller {
 
         $search = array();
         if ($this->input->post()) {
-            $search['STORE_OID'] = $this->input->get_post('store-oid');
             $search['FLC_OID'] = $this->input->get_post('flc-oid');
             $search['SLC_NAME'] = $this->input->get_post('slc-name');
             $search['SLC_CODE'] = $this->input->get_post('slc-code');
@@ -49,9 +48,8 @@ class Second extends Ma_Controller {
         $out['search'] = $search;
 
         $param = array();
-        $this->load->model('mstore');
-        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
-        $param['first'] = $this->lcommon->insert_blank(array());
+        $this->load->model('mfirstlevelcatg');
+        $param['first'] = $this->lcommon->insert_blank($this->mfirstlevelcatg->load_for_kv($this->cid));
         $out['param'] = $param;
 
         // The data of search
@@ -74,14 +72,8 @@ class Second extends Ma_Controller {
     public function edit($id = 0) {
         $this->load->library('twig');
         $out = array();
-        $out['title'] = '一级分类管理';
+        $out['title'] = '二级分类管理';
         
-        $param = array();
-        $this->load->model('mstore');
-        $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
-        $param['first'] = $this->lcommon->insert_blank(array());
-        $out['param'] = $param;
-
         $this->load->model('msecondlevelcatg');
         if ($id) {
             $out['second'] = $this->msecondlevelcatg->load($id, $this->cid);
@@ -108,8 +100,6 @@ class Second extends Ma_Controller {
             array('field' => 'slc-code', 'label' => '编码', 'rules' => 'trim|required|callback__check_code'),
             array('field' => 'slc-name', 'label' => '名称', 'rules' => 'trim|required'),
             array('field' => 'disp-seq', 'label' => '展示顺序', 'rules' => 'integer'),
-            array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'trim|callback__select'),
-            array('field' => 'flc-oid', 'label' => '所属一级分类', 'rules' => 'trim|callback__select'),
         );
         $this->load->library('form_validation');
         $this->form_validation->set_rules($rules);
@@ -124,8 +114,8 @@ class Second extends Ma_Controller {
         $param['SLC_CODE'] = $this->input->post('slc-code');
         $param['SLC_NAME'] = $this->input->post('slc-name');
         $param['SLC_DESCR'] = $this->input->post('slc-descr');
+        $param['COMPANY_OID'] = $this->cid;
         $param['DISP_SEQ'] = $this->input->post('disp-seq');
-        $param['FLC_OID'] = $this->input->post('flc-oid');
         if (!$param['DISP_SEQ']) {
             $param['DISP_SEQ'] = 0;
         }
@@ -134,6 +124,55 @@ class Second extends Ma_Controller {
             $out['status'] = 0;
             $out['msg'] = '保存成功';
             $out['id'] = $cid;
+            $this->output->set_output(json_encode($out));
+
+            return true;
+        }
+
+        $out['status'] = 1;
+        $out['msg'] = '保存失败';
+        $this->output->set_output(json_encode($out));
+
+        return false;
+    }
+/*}}}*/
+/*{{{ savecategory */
+    public function savecategory() {
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $id = intval($this->input->get_post('id'));
+        $first = intval($this->input->get_post('first'));
+        if (!$id) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+        if (!$first) {
+            $out["status"] = 1;
+            $out["msg"] = "请选择一级分类";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $this->load->model('msecondlevelcatg');
+        $param = array(
+            'SLC_OID' => $id,
+            'FLC_OID' => $first,
+        );
+        if ($this->msecondlevelcatg->save($param, $id)) {
+            $out['status'] = 0;
+            $out['msg'] = '保存成功';
             $this->output->set_output(json_encode($out));
 
             return true;
@@ -223,6 +262,34 @@ class Second extends Ma_Controller {
         $this->output->set_output(json_encode($out));
 
         return false;
+    }
+/*}}}*/
+
+/*{{{ category */
+    public function category($id) {
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+        if (!$id) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $this->load->model('msecondlevelcatg');
+        $out['status'] = 0;
+        $out['data'] = $this->msecondlevelcatg->load_vs_category($id);
+        $this->output->set_output(json_encode($out));
+
+        return true;
     }
 /*}}}*/
 

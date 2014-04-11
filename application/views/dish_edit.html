@@ -2,7 +2,7 @@
 
 {% block data %}
 <div id="dish-edit">
-        {% if dish.SLC_OID %}
+        {% if dish.DISH_OID %}
         <h3>菜品管理：{{ dish.DISH_NAME }}</h3>
         {% else %}
         <h3>新增菜品</h3>
@@ -22,7 +22,7 @@
         <div class="control-group">
             <label class="control-label" for="inputDishCode">菜品编码</label>
             <div class="controls">
-            {% if dish.SLC_OID %}
+            {% if dish.DISH_OID %}
                 {{ dish.DISH_CODE }}
                 {{form_hidden('dish-code', dish.DISH_CODE, 'id="inputDishCode"')|raw}}
             {% else %}
@@ -50,29 +50,7 @@
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label" for="inputStore">所属分类</label> 
-            {% for key, item in param.store %}
-            <div class="controls">
-                <label class="checkbox inline">
-                {{form_checkbox('store-oid', key, store[key]? true: false, 'id="inputStore"')|raw}}{{item.name}}
-                </label>
-                <i class="icon-star-empty"></i>
-                <div class="category hide">
-                    {{form_dropdown('flc-oid', item.first, store[key].FLC_OID, 'id="inputFirst" class="input-small"')|raw}}
-                    {{form_hidden('slc-oid', store[key].SLC_OID)|raw}}
-                    {{form_dropdown('slc-oid', [], dish.SLC_OID, 'id="inputSecond" class="input-small"')|raw}}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="inputOrigCost">原价</label> <div class="controls">
-                {{form_input('orig-cost', dish.ORIG_COST, 'id="inputOrigCost"')|raw}}
-                <i class="icon-star-empty"></i>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="inputCurCost">现价</label> <div class="controls">
+            <label class="control-label" for="inputCurCost">价格</label> <div class="controls">
                 {{form_input('cur-cost', dish.CUR_COST, 'id="inputCurCost"')|raw}}
                 <i class="icon-star-empty"></i>
             </div>

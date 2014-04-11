@@ -19,7 +19,7 @@ class MDishes extends CI_Model {
             , D.DISH_NAME
             , D.DISH_DESCR
             , D.UNIT
-            , D.ORIG_COST
+            , D.CUR_COST ORIG_COST
             , D.CUR_COST
             , D.IS_PROM
             , D.IS_NEW_PRODUCTS
@@ -40,11 +40,13 @@ class MDishes extends CI_Model {
         $q = 'SELECT SLD.DISH_OID
             , SLD.SLC_OID
             , SLD.FLC_OID
-            , SLD.DISP_SEQ
+            , SLC.DISP_SEQ
             FROM SECOND_LEVEL_DISHES SLD
-            INNER JOIN FIRST_LEVEL_CATG FLC ON SLD.FLC_OID=FLC.FLC_OID AND FLC.STORE_OID=? AND FLC.FLC_STATUS<>?
+            INNER JOIN SECOND_LEVEL_CATG SLC ON SLC.SLC_OID=SLD.SLC_OID AND SLC.SLC_STATUS<>?
+            INNER JOIN FIRST_LEVEL_CATG FLC ON SLD.FLC_OID=FLC.FLC_OID AND FLC.FLC_STATUS<>?
+            INNER JOIN STORE_FIRST_LEVEL SFL ON SFL.FLC_OID=FLC.FLC_OID AND SFL.STORE_OID=?
         ';
-        $query = $this->db->query($q, array($id, MA_STATUS_D));
+        $query = $this->db->query($q, array(MA_STATUS_D, MA_STATUS_D, $id));
         return $query->result();
     }
 /*}}}*/
@@ -81,14 +83,19 @@ class MDishes extends CI_Model {
 /*{{{ load_all_by_company */
     private function _where($param) {
         if (@$param['STORE_OID']) {
-            $this->db->where('FLC.STORE_OID', $param['STORE_OID']);
+            $this->db->where('SD.STORE_OID', $param['STORE_OID']);
+            $this->db->join('STORE_DISHES SD', 'SD.DISH_OID=D.DISH_OID');
         }
-        if (@$param['FLC_OID']) {
-            $this->db->where('FLC.FLC_OID', $param['FLC_OID']);
+        if (@$param['FLC_OID'] || @$param['SLC_OID']) {
+            if (@$param['FLC_OID']) {
+                $this->db->where('SLD.FLC_OID', $param['FLC_OID']);
+            }
+            if (@$param['SLC_OID']) {
+                $this->db->where('SLD.SLC_OID', $param['SLC_OID']);
+            }
+            $this->db->join('SECOND_LEVEL_DISHES SLD', 'SLD.DISH_OID=D.DISH_OID');
         }
-        if (@$param['SLC_OID']) {
-            $this->db->where('SLC.SLC_OID', $param['SLC_OID']);
-        }
+
         if (@$param['DISH_NAME']) {
             $this->db->like('D.DISH_NAME', $param['DISH_NAME']);
         }
@@ -96,7 +103,7 @@ class MDishes extends CI_Model {
             $this->db->like('D.DISH_CODE', $param['DISH_CODE']);
         }
         if (@$param['COMPANY_OID']) {
-            $this->db->where('S.COMPANY_OID', $param['COMPANY_OID']);
+            $this->db->where('D.COMPANY_OID', $param['COMPANY_OID']);
         }
         $this->db->where('D.DISH_STATUS <>', 'd'); 
     }
@@ -106,21 +113,13 @@ class MDishes extends CI_Model {
         $this->_where($param);
         $this->db->select('COUNT(1) AS num');
         $this->db->from('DISHES D');
-        $this->db->join('SECOND_LEVEL_DISHES SLD', 'SLD.DISH_OID=D.DISH_OID');
-        $this->db->join('SECOND_LEVEL_CATG SLC', 'SLD.SLC_OID=SLC.SLC_OID AND SLC.SLC_STATUS<>\'d\'');
-        $this->db->join('FIRST_LEVEL_CATG FLC', 'FLC.FLC_OID=SLC.FLC_OID AND FLC.FLC_STATUS<>\'d\'');
-        $this->db->join('STORE S', 'S.STORE_OID=FLC.STORE_OID AND S.STORE_STATUS<>\'d\'');
         $query = $this->db->get();
 
         if ($num = $query->row(0)->num) {
-            $this->db->select('D.*, SLC.SLC_NAME, FLC.FLC_NAME, S.STORE_NAME');
+            $this->db->select('D.*');
             $this->_where($param);
             $this->db->from('DISHES D');
-            $this->db->join('SECOND_LEVEL_DISHES SLD', 'SLD.DISH_OID=D.DISH_OID');
-            $this->db->join('SECOND_LEVEL_CATG SLC', 'SLD.SLC_OID=SLC.SLC_OID AND SLC.SLC_STATUS<>\'d\'');
-            $this->db->join('FIRST_LEVEL_CATG FLC', 'FLC.FLC_OID=SLC.FLC_OID AND FLC.FLC_STATUS<>\'d\'');
-            $this->db->join('STORE S', 'S.STORE_OID=FLC.STORE_OID AND S.STORE_STATUS<>\'d\'');
-            $this->db->order_by('SLD.DISP_SEQ, D.DISH_OID');
+            $this->db->order_by('D.DISP_SEQ, D.DISH_OID');
             $this->db->limit($param['per_page'], $param['start']);
             $query = $this->db->get();
             $data = $query->result();
@@ -138,34 +137,41 @@ class MDishes extends CI_Model {
     public function load($id, $cid) {
         $out = array();
 
-        $q = 'SELECT D.*, SLC.SLC_OID, FLC.FLC_OID, S.STORE_OID, SLD.DISP_SEQ
-            FROM DISHES D
-            INNER JOIN SECOND_LEVEL_DISHES SLD ON SLD.DISH_OID=D.DISH_OID
-            INNER JOIN SECOND_LEVEL_CATG SLC ON SLD.SLC_OID=SLC.SLC_OID AND SLC.SLC_STATUS<>?
-            INNER JOIN FIRST_LEVEL_CATG FLC ON FLC.FLC_OID=SLC.FLC_OID AND FLC.FLC_STATUS<>?
-            INNER JOIN STORE S ON S.STORE_OID=FLC.STORE_OID AND S.COMPANY_OID=? AND S.STORE_STATUS<>?
-            WHERE D.DISH_OID=? AND D.DISH_STATUS <>?
-        ';
-        $query = $this->db->query($q, array(MA_STATUS_D, MA_STATUS_D, $cid, MA_STATUS_D, $id, MA_STATUS_D));
-        if ($tmp = $query->result()) {
-            foreach ($tmp as $val) {
-                if (!isset($out['dish'])) {
-                    $out['dish'] = $val;
-                }
-                $out['store'][$val->STORE_OID] = $val;
-            }
-        }
+        $q = 'SELECT D.* FROM DISHES D WHERE D.DISH_OID=? AND D.DISH_STATUS <>? AND D.COMPANY_OID=?';
+        $query = $this->db->query($q, array($id, MA_STATUS_D, $cid));
 
+        return $query->row();
+    }
+/*}}}*/
+/*{{{ load_vs_store */
+    public function load_vs_store($id) {
+        $this->db->select('STORE_OID');
+        $this->db->where('DISH_OID', $id);
+        $query = $this->db->get('STORE_DISHES');
+
+        $out = array();
+        foreach ($query->result() as $val) {
+            $out[] = $val->STORE_OID;
+        }
+        
         return $out;
+    }
+/*}}}*/
+/*{{{ load_vs_category */
+    public function load_vs_category($id) {
+        $this->db->select('FLC_OID first, SLC_OID second');
+        $this->db->where('DISH_OID', $id);
+        $query = $this->db->get('SECOND_LEVEL_DISHES');
+
+        return $query->row();
     }
 /*}}}*/
 /*{{{ not_exists */
     public function not_exists($str, $id, $cid) {
         $q = 'SELECT D.DISH_OID 
             FROM DISHES D 
-            INNER JOIN STORE_DISHES SD ON SD.DISH_OID=D.DISH_OID AND SD.COMPANY_OID=? 
-            WHERE D.DISH_CODE=? AND D.DISH_STATUS<>?';
-        $query = $this->db->query($q, array($cid, $str, MA_STATUS_D));
+            WHERE D.DISH_CODE=? AND D.DISH_STATUS<>? AND D.COMPANY_OID=?';
+        $query = $this->db->query($q, array($str, MA_STATUS_D, $cid));
         if ($tmp = $query->row()) {
             if ($tmp->DISH_OID != $id) {
                 return false;
@@ -196,30 +202,6 @@ class MDishes extends CI_Model {
                 return false;
             }
 
-            // Insert dish vs second level
-            $param['sld']['DISH_OID'] = $id;
-            foreach ($param['sld']['SLC_OID'] as $val) {
-                $tmp = $param['sld'];
-                $tmp['SLC_OID'] = $val;
-                if (!$this->db->insert('SECOND_LEVEL_DISHES', $tmp)) {
-                    $this->db->trans_rollback();
-
-                    return false;
-                }
-            }
-
-            // Insert store vs dish 
-            $param['sd']['DISH_OID'] = $id;
-            foreach ($param['sd']['STORE_OID'] as $val) {
-                $tmp = $param['sd'];
-                $tmp['STORE_OID'] = $val;
-                if (!$this->db->insert('STORE_DISHES', $param['sd'])) {
-                    $this->db->trans_rollback();
-
-                    return false;
-                }
-            }
-
             $this->db->trans_complete();
 
             return $id;
@@ -234,39 +216,60 @@ class MDishes extends CI_Model {
                 return false;
             }
 
-            $this->db->delete('SECOND_LEVEL_DISHES', array(
-                'DISH_OID'=> $param['sld']['DISH_OID'], 
-            ));
-            foreach ($param['sld']['SLC_OID'] as $key => $val) {
-                $tmp = $param['sld'];
-                $tmp['SLC_OID'] = $val;
-                $tmp['FLC_OID'] = $param['sld']['FLC_OID'][$key];
-                if (!$this->db->insert('SECOND_LEVEL_DISHES', $tmp)) {
-                    $this->db->trans_rollback();
-
-                    return false;
-                }
-            }
-
-            $this->db->delete('STORE_DISHES', array(
-                'DISH_OID'=> $param['sd']['DISH_OID'], 
-            ));
-            foreach ($param['sd']['STORE_OID'] as $val) {
-                $tmp = $param['sd'];
-                $tmp['STORE_OID'] = $val;
-                if (!$this->db->insert('STORE_DISHES', $tmp)) {
-                    $this->db->trans_rollback();
-
-                    return false;
-                }
-            }
-
             $this->db->trans_complete();
 
             return $id;
         }
 
         return false;
+    }
+/*}}}*/
+/*{{{ savestore */
+    public function savestore($store, $cid, $id) {
+        $this->db->trans_start();
+
+        $this->db->delete('STORE_DISHES', array(
+            'DISH_OID'=> $id, 
+        ));
+        foreach ($store as $val) {
+            $param = array(
+                'STORE_OID' => $val,
+                'DISH_OID' => $id,
+                'COMPANY_OID' => $cid,
+            );
+            if (!$this->db->insert('STORE_DISHES', $param)) {
+                $this->db->trans_rollback();
+
+                return false;
+            }
+        }
+
+        $this->db->trans_complete();
+
+        return true;
+    }
+/*}}}*/
+/*{{{ savecategory */
+    public function savecategory($first, $second, $id) {
+        $this->db->trans_start();
+
+        $this->db->delete('SECOND_LEVEL_DISHES', array(
+            'DISH_OID'=> $id, 
+        ));
+        $param = array(
+            'FLC_OID' => $first,
+            'DISH_OID' => $id,
+            'SLC_OID' => $second,
+        );
+        if (!$this->db->insert('SECOND_LEVEL_DISHES', $param)) {
+            $this->db->trans_rollback();
+
+            return false;
+        }
+
+        $this->db->trans_complete();
+
+        return true;
     }
 /*}}}*/
 /*{{{ load_image */

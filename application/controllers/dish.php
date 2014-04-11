@@ -52,7 +52,8 @@ class Dish extends Ma_Controller {
         $param = array();
         $this->load->model('mstore');
         $param['store'] = $this->lcommon->insert_blank($this->mstore->load_for_kv($this->cid));
-        $param['first'] = $this->lcommon->insert_blank(array());
+        $this->load->model('mfirstlevelcatg');
+        $param['first'] = $this->lcommon->insert_blank($this->mfirstlevelcatg->load_for_kv($this->cid));
         $param['second'] = $this->lcommon->insert_blank(array());
         $out['param'] = $param;
 
@@ -79,20 +80,43 @@ class Dish extends Ma_Controller {
         $out['title'] = '菜品管理';
         
         $param = array();
-        $this->load->model('mstore');
-        $param['store'] = $this->mstore->load_for_dish_kv($this->cid);
         $param['prom'] = $this->lcommon->insert_blank($this->lcommon->option('yesno'));
         $param['new'] = $this->lcommon->insert_blank($this->lcommon->option('yesno'));
         $out['param'] = $param;
 
         $this->load->model('mdishes');
         if ($id) {
-            if ($tmp = $this->mdishes->load($id, $this->cid)) {
-                $out['dish'] = $tmp['dish'];
-                $out['store'] = $tmp['store'];
-            }
+            $out['dish'] = $this->mdishes->load($id, $this->cid);
         }
         $this->twig->display('dish_edit.html', $out);
+
+        return true;
+    }
+/*}}}*/
+/*{{{ load */
+    public function load($id = 0) {
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $this->load->model('mdishes');
+        if ($id) {
+            if ($tmp = $this->mdishes->load($id, $this->cid)) {
+                $out['status'] = 0;
+                $out['data'] = $tmp;
+            }
+        }
+        $out['status'] = 1;
+        $out['msg'] = '数据获取失败';
+        $this->output->set_output(json_encode($out));
+
+        return false;
 
         return true;
     }
@@ -114,10 +138,6 @@ class Dish extends Ma_Controller {
             array('field' => 'dish-code', 'label' => '编码', 'rules' => 'trim|required|callback__check_code'),
             array('field' => 'dish-name', 'label' => '名称', 'rules' => 'trim|required'),
             array('field' => 'disp-seq', 'label' => '展示顺序', 'rules' => 'integer'),
-            array('field' => 'store-oid', 'label' => '所属门店', 'rules' => 'callback__select'),
-            array('field' => 'flc-oid', 'label' => '所属一级分类', 'rules' => 'callback__select'),
-            array('field' => 'slc-oid', 'label' => '所属二级分类', 'rules' => 'callback__select'),
-            array('field' => 'orig-cost', 'label' => '原价', 'rules' => 'trim|required|callback__decimal'),
             array('field' => 'cur-cost', 'label' => '现价', 'rules' => 'trim|required|callback__decimal'),
         );
         $this->load->library('form_validation');
@@ -136,25 +156,11 @@ class Dish extends Ma_Controller {
             'DISH_NAME' => $this->input->post('dish-name'),
             'DISH_DESCR' => $this->input->post('dish-descr'),
             'UNIT' => $this->input->post('unit'),
-            'ORIG_COST' => $this->input->post('orig-cost'),
             'CUR_COST' => $this->input->post('cur-cost'),
             'IS_PROM' => $this->input->post('is-prom'),
             'IS_NEW_PRODUCTS' => $this->input->post('is-new-products'),
-        );
-
-        // For second level dishes table
-        $param['sld'] = array(
-            'SLC_OID' => $this->input->post('slc-oid'),
-            'DISH_OID' => $id,
-            'FLC_OID' => $this->input->post('flc-oid'),
             'DISP_SEQ' => $this->input->post('disp-seq'),
-        );
-        // For store dishes table
-        $param['sd'] = array(
-            'STORE_OID' => $this->input->post('store-oid'),
-            'DISH_OID' => $id,
             'COMPANY_OID' => $this->cid,
-            'STORE_DISH_PRICE' => $this->input->post('cur-cost'),
         );
 
         $this->load->model('mdishes');
@@ -196,6 +202,94 @@ class Dish extends Ma_Controller {
         }
 
         return true;
+    }
+/*}}}*/
+/*{{{ savestore */
+    public function savestore() {
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $id = intval($this->input->get_post('id'));
+        $store = $this->input->get_post('store');
+        if (!$id) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+        if ($store) {
+            $store = array_filter($store, function($val){
+                return intval($val);
+            });
+        }
+        $this->load->model('mdishes');
+        if ($this->mdishes->savestore($store, $this->cid, $id)) {
+            $out['status'] = 0;
+            $out['msg'] = '保存成功';
+            $this->output->set_output(json_encode($out));
+
+            return true;
+        }
+
+        $out['status'] = 1;
+        $out['msg'] = '保存失败';
+        $this->output->set_output(json_encode($out));
+
+        return false;
+    }
+/*}}}*/
+/*{{{ savecategory */
+    public function savecategory() {
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $id = intval($this->input->get_post('id'));
+        $first = intval($this->input->get_post('first'));
+        $second = intval($this->input->get_post('second'));
+        if (!$id) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+        if (!$first || !$second) {
+            $out["status"] = 1;
+            $out["msg"] = "请选择一级分类和二级分类";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $this->load->model('mdishes');
+        if ($this->mdishes->savecategory($first, $second, $id)) {
+            $out['status'] = 0;
+            $out['msg'] = '保存成功';
+            $this->output->set_output(json_encode($out));
+
+            return true;
+        }
+
+        $out['status'] = 1;
+        $out['msg'] = '保存失败';
+        $this->output->set_output(json_encode($out));
+
+        return false;
     }
 /*}}}*/
 /*{{{ image */
@@ -323,8 +417,8 @@ class Dish extends Ma_Controller {
     }
 /*}}}*/
 
-/*{{{ first */
-    public function first($sid) {
+/*{{{ store */
+    public function store($id) {
         $out = array();
         $this->output->set_content_type('application/json');
         if (!$this->input->is_ajax_request()) {
@@ -334,7 +428,7 @@ class Dish extends Ma_Controller {
 
             return false;
         }
-        if (!$sid) {
+        if (!$id) {
             $out["status"] = 1;
             $out["msg"] = "系统忙，请稍后...";
             $this->output->set_output(json_encode($out));
@@ -342,9 +436,36 @@ class Dish extends Ma_Controller {
             return false;
         }
 
-        $this->load->model('mfirstlevelcatg');
+        $this->load->model('mdishes');
         $out['status'] = 0;
-        $out['data'] = $this->lcommon->insert_blank($this->mfirstlevelcatg->load_for_kv($sid));
+        $out['data'] = $this->mdishes->load_vs_store($id);
+        $this->output->set_output(json_encode($out));
+
+        return true;
+    }
+/*}}}*/
+/*{{{ category */
+    public function category($id) {
+        $out = array();
+        $this->output->set_content_type('application/json');
+        if (!$this->input->is_ajax_request()) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+        if (!$id) {
+            $out["status"] = 1;
+            $out["msg"] = "系统忙，请稍后...";
+            $this->output->set_output(json_encode($out));
+
+            return false;
+        }
+
+        $this->load->model('mdishes');
+        $out['status'] = 0;
+        $out['data'] = $this->mdishes->load_vs_category($id);
         $this->output->set_output(json_encode($out));
 
         return true;

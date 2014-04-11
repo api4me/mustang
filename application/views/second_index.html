@@ -4,8 +4,6 @@
     <h3>二级分类一览</h3>
     <div id="second-index" class="ma-block clearfix">
     {{form_open('/second/index', 'class="form-inline"')|raw}}
-        <span class="label">所属门店</span>
-        {{form_dropdown("store-oid", param.store, search.STORE_OID)|raw}}
         <span class="label">所属一级分类</span>
         {{form_hidden('flc-oid', search.FLC_OID)|raw}}
         {{form_dropdown("flc-oid", param.first, search.FLC_OID)|raw}}
@@ -19,7 +17,7 @@
 {% endblock %}
 
 {% block data %}
-<div class="ma-block clearfix">
+<div class="ma-block clearfix" id="second-index-content">
     <table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
@@ -29,7 +27,6 @@
             <th>分类编码</th>
             <th>分类描述</th>
             <th>所属一级分类</th>
-            <th>所属门店</th>
             <th>创建人</th>
             <th>创建时间</th>
         </tr>
@@ -42,8 +39,7 @@
             <td><a href="{{site_url()}}second/edit/{{item.SLC_OID}}" title="编辑">{{item.SLC_NAME}}</a></td>
             <td>{{item.SLC_CODE}}</td>
             <td><abbr title="{{item.SLC_DESCR}}">{{mb_substr(item.SLC_DESCR, 0, 5)}}</abbr></td>
-            <td>{{item.FLC_NAME}}</td>
-            <td>{{item.STORE_NAME}}</td>
+            <td><a class="edit-category" href="#" data-id="{{item.SLC_OID}}">编辑</a></td>
             <td>{{item.USER_NAME}}</td>
             <td>{{item.CRE_DATE|date('Y-m-d')}}</td>
         </tr>
@@ -55,6 +51,24 @@
     <a class="btn span2" href="{{site_url()}}second/edit/0">新增</a>
     <a class="btn span2 btn-danger input-medium" href="{{site_url()}}second/del" name="multi-del">删除</a>
     {{pagination|raw}}
+</div>
+
+<div id="second-modal-category" class="modal hide fade">
+    <div class="modal-header clearfix">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>关联一级分类</h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group offset1">
+            <label class="control-label" for="inputFirst">所属一级分类</label>
+            {{form_dropdown('flc-oid', param.first, null, 'id="inputFirst"')|raw}}
+        </div>
+    </div>
+    {{form_hidden('id', 0)|raw}}
+    <div class="modal-footer">
+        <button class="btn btn-primary save">保存</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
 </div>
 
 {% endblock %}

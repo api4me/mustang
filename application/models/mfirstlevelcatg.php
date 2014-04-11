@@ -14,17 +14,20 @@ class MFirstlevelcatg extends CI_Model {
 
 /*{{{ load_by_store */
     public function load_by_store($sid) {
-        $q = 'SELECT FLC_OID, FLC_CODE, FLC_NAME, FLC_DESCR, DISP_SEQ, STORE_OID, UPD_DATE FROM FIRST_LEVEL_CATG WHERE STORE_OID=? AND FLC_STATUS<>?';
+        $q = 'SELECT FLC.FLC_OID, FLC.FLC_CODE, FLC.FLC_NAME, FLC.FLC_DESCR, FLC.DISP_SEQ, SFL.STORE_OID, FLC.UPD_DATE 
+            FROM FIRST_LEVEL_CATG FLC
+            JOIN STORE_FIRST_LEVEL SFL ON SFL.FLC_OID=FLC.FLC_OID AND SFL.STORE_OID=?
+            WHERE FLC.FLC_STATUS<>?';
         $query = $this->db->query($q, array($sid, MA_STATUS_D));
 
         return $query->result();
     }
 /*}}}*/
 /*{{{ load_for_kv */
-    public function load_for_kv($sid) {
+    public function load_for_kv($cid) {
         $this->db->select('FLC_OID, FLC_NAME');
         $this->db->where('FLC_STATUS <>', 'd');
-        $this->db->where('STORE_OID', $sid);
+        $this->db->where('COMPANY_OID', $cid);
         $query = $this->db->get('FIRST_LEVEL_CATG');
 
         $out = array();
@@ -40,7 +43,8 @@ class MFirstlevelcatg extends CI_Model {
 /*{{{ load_all_by_company */
     private function _where($param) {
         if (@$param['STORE_OID']) {
-            $this->db->where('FLC.STORE_OID', $param['STORE_OID']);
+             $this->db->where('SFL.STORE_OID', $param['STORE_OID']);
+             $this->db->join('STORE_FIRST_LEVEL SFL', 'SFL.FLC_OID=FLC.FLC_OID');
         }
         if (@$param['FLC_NAME']) {
             $this->db->like('FLC.FLC_NAME', $param['FLC_NAME']);
@@ -49,7 +53,7 @@ class MFirstlevelcatg extends CI_Model {
             $this->db->like('FLC.FLC_CODE', $param['FLC_CODE']);
         }
         if (@$param['COMPANY_OID']) {
-            $this->db->where('S.COMPANY_OID', $param['COMPANY_OID']);
+            $this->db->where('FLC.COMPANY_OID', $param['COMPANY_OID']);
         }
         $this->db->where('FLC.FLC_STATUS <>', 'd'); 
     }
@@ -59,14 +63,12 @@ class MFirstlevelcatg extends CI_Model {
         $this->_where($param);
         $this->db->select('COUNT(1) AS num');
         $this->db->from('FIRST_LEVEL_CATG FLC');
-        $this->db->join('STORE S', 'S.STORE_OID=FLC.STORE_OID AND S.STORE_STATUS<>\'d\'');
         $query = $this->db->get();
 
         if ($num = $query->row(0)->num) {
-            $this->db->select('FLC.*, S.STORE_NAME, U.USER_NAME');
+            $this->db->select('FLC.*, U.USER_NAME');
             $this->_where($param);
             $this->db->from('FIRST_LEVEL_CATG FLC');
-            $this->db->join('STORE S', 'S.STORE_OID=FLC.STORE_OID AND S.STORE_STATUS<>\'d\'');
             $this->db->join('USER_PROFILE U', 'U.USER_OID=FLC.CRE_BY', 'left');
             $this->db->limit($param['per_page'], $param['start']);
             $query = $this->db->get();
@@ -85,7 +87,7 @@ class MFirstlevelcatg extends CI_Model {
 /*{{{ load */
     public function load($id, $cid) {
         $this->db->from('FIRST_LEVEL_CATG FLC');
-        $this->db->join('STORE S', "S.STORE_OID=FLC.STORE_OID AND S.COMPANY_OID={$cid} AND S.STORE_STATUS<>'d'");
+        $this->db->where('FLC.COMPANY_OID', $cid);
         $this->db->where('FLC.FLC_STATUS <>', MA_STATUS_D);
         $this->db->where('FLC.FLC_OID', $id);
         $query = $this->db->get();
@@ -93,12 +95,25 @@ class MFirstlevelcatg extends CI_Model {
         return $query->row();
     }
 /*}}}*/
+/*{{{ load_vs_store */
+    public function load_vs_store($id) {
+        $this->db->select('STORE_OID');
+        $this->db->where('FLC_OID', $id);
+        $query = $this->db->get('STORE_FIRST_LEVEL');
+
+        $out = array();
+        foreach ($query->result() as $val) {
+            $out[] = $val->STORE_OID;
+        }
+        
+        return $out;
+    }
+/*}}}*/
 /*{{{ not_exists */
     public function not_exists($str, $id, $cid) {
         $q = 'SELECT FLC.FLC_OID 
             FROM FIRST_LEVEL_CATG FLC 
-            INNER JOIN STORE S ON S.STORE_OID=FLC.STORE_OID AND S.COMPANY_OID=? 
-            WHERE FLC.FLC_CODE=? AND FLC.FLC_STATUS<>?';
+            WHERE FLC.COMPANY_OID=? AND FLC.FLC_CODE=? AND FLC.FLC_STATUS<>?';
         $query = $this->db->query($q, array($cid, $str, MA_STATUS_D));
         if ($tmp = $query->row()) {
             if ($tmp->FLC_OID != $id) {
@@ -143,9 +158,40 @@ class MFirstlevelcatg extends CI_Model {
         return false;
     }
 /*}}}*/
+/*{{{ savestore */
+    public function savestore($store, $cid, $id) {
+        $this->db->trans_start();
+
+        $this->db->delete('STORE_FIRST_LEVEL', array(
+            'FLC_OID'=> $id, 
+        ));
+        foreach ($store as $val) {
+            $param = array(
+                'STORE_OID' => $val,
+                'FLC_OID' => $id,
+                'COMPANY_OID' => $cid,
+            );
+            if (!$this->db->insert('STORE_FIRST_LEVEL', $param)) {
+                $this->db->trans_rollback();
+
+                return false;
+            }
+        }
+
+        $this->db->trans_complete();
+
+        return true;
+    }
+/*}}}*/
 /*{{{ del */
     public function del($id) {
         $this->db->trans_start();
+        // STORE_FIRST_LEVEL
+        $this->db->where_in('FLC_OID', $id);
+        if (!$this->db->delete('STORE_FIRST_LEVEL')) {
+            $this->db->trans_rollback();
+            return false;
+        }
         // SECOND_LEVEL_DISHES
         $this->db->where_in('FLC_OID', $id);
         if (!$this->db->delete('SECOND_LEVEL_DISHES')) {
