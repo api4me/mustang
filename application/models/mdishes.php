@@ -40,13 +40,12 @@ class MDishes extends CI_Model {
         $q = 'SELECT SLD.DISH_OID
             , SLD.SLC_OID
             , SLD.FLC_OID
-            , SLC.DISP_SEQ
+            , D.DISP_SEQ
             FROM SECOND_LEVEL_DISHES SLD
-            INNER JOIN SECOND_LEVEL_CATG SLC ON SLC.SLC_OID=SLD.SLC_OID AND SLC.SLC_STATUS<>?
-            INNER JOIN FIRST_LEVEL_CATG FLC ON SLD.FLC_OID=FLC.FLC_OID AND FLC.FLC_STATUS<>?
-            INNER JOIN STORE_FIRST_LEVEL SFL ON SFL.FLC_OID=FLC.FLC_OID AND SFL.STORE_OID=?
+            INNER JOIN DISHES D ON D.DISH_OID=SLD.DISH_OID AND D.DISH_STATUS<>?
+            INNER JOIN STORE_DISHES SD ON SD.DISH_OID=D.DISH_OID AND SD.STORE_OID=?
         ';
-        $query = $this->db->query($q, array(MA_STATUS_D, MA_STATUS_D, $id));
+        $query = $this->db->query($q, array(MA_STATUS_D, $id));
         return $query->result();
     }
 /*}}}*/
