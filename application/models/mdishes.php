@@ -44,6 +44,7 @@ class MDishes extends CI_Model {
             FROM SECOND_LEVEL_DISHES SLD
             INNER JOIN DISHES D ON D.DISH_OID=SLD.DISH_OID AND D.DISH_STATUS<>?
             INNER JOIN STORE_DISHES SD ON SD.DISH_OID=D.DISH_OID AND SD.STORE_OID=?
+            ORDER BY DISP_SEQ, DISH_OID
         ';
         $query = $this->db->query($q, array(MA_STATUS_D, $id));
         return $query->result();
