@@ -159,11 +159,14 @@ class MDishes extends CI_Model {
 /*}}}*/
 /*{{{ load_vs_category */
     public function load_vs_category($id) {
-        $this->db->select('FLC_OID first, SLC_OID second');
-        $this->db->where('DISH_OID', $id);
-        $query = $this->db->get('SECOND_LEVEL_DISHES');
+        $q = 'SELECT SLD.FLC_OID first, FLC.FLC_NAME fname, SLD.SLC_OID second, SLC.SLC_NAME sname FROM SECOND_LEVEL_DISHES SLD
+            INNER JOIN FIRST_LEVEL_CATG FLC ON FLC.FLC_OID=SLD.FLC_OID
+            INNER JOIN SECOND_LEVEL_CATG SLC ON SLC.SLC_OID=SLD.SLC_OID
+            WHERE SLD.DISH_OID=?
+        ';
+        $query = $this->db->query($q, array($id));
 
-        return $query->row();
+        return $query->result();
     }
 /*}}}*/
 /*{{{ not_exists */
@@ -250,21 +253,23 @@ class MDishes extends CI_Model {
     }
 /*}}}*/
 /*{{{ savecategory */
-    public function savecategory($first, $second, $id) {
+    public function savecategory($data, $id) {
         $this->db->trans_start();
 
         $this->db->delete('SECOND_LEVEL_DISHES', array(
             'DISH_OID'=> $id, 
         ));
-        $param = array(
-            'FLC_OID' => $first,
-            'DISH_OID' => $id,
-            'SLC_OID' => $second,
-        );
-        if (!$this->db->insert('SECOND_LEVEL_DISHES', $param)) {
-            $this->db->trans_rollback();
+        foreach ($data as $val) {
+            $param = array(
+                'FLC_OID' => $val['first'],
+                'DISH_OID' => $id,
+                'SLC_OID' => $val['second'],
+            );
+            if (!$this->db->insert('SECOND_LEVEL_DISHES', $param)) {
+                $this->db->trans_rollback();
 
-            return false;
+                return false;
+            }
         }
 
         $this->db->trans_complete();

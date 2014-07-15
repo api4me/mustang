@@ -297,4 +297,19 @@ ul.nav-list {
     padding: 0 10px;
     cursor: pointer;
 }
+#dish-modal-category button.add { 
+    margin: 10px;
+    margin-top: 50px;
+}
+#dish-modal-category .model-enable { 
+    border: 1px solid #777;
+    width: 150px;
+    height: 150px;
+    padding: 10px;
+    overflow-y: scroll;
+}
+#dish-modal-category .model-enable span.delete {
+    color: red;
+    cursor: pointer;
+}
 

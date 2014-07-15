@@ -259,8 +259,7 @@ class Dish extends Ma_Controller {
         }
 
         $id = intval($this->input->get_post('id'));
-        $first = intval($this->input->get_post('first'));
-        $second = intval($this->input->get_post('second'));
+        $data = $this->input->get_post('data');
         if (!$id) {
             $out["status"] = 1;
             $out["msg"] = "系统忙，请稍后...";
@@ -268,16 +267,16 @@ class Dish extends Ma_Controller {
 
             return false;
         }
-        if (!$first || !$second) {
+        if (!$data) {
             $out["status"] = 1;
-            $out["msg"] = "请选择一级分类和二级分类";
+            $out["msg"] = "请选择一级分类和二级分类并添加";
             $this->output->set_output(json_encode($out));
 
             return false;
         }
 
         $this->load->model('mdishes');
-        if ($this->mdishes->savecategory($first, $second, $id)) {
+        if ($this->mdishes->savecategory($data, $id)) {
             $out['status'] = 0;
             $out['msg'] = '保存成功';
             $this->output->set_output(json_encode($out));
