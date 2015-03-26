@@ -1,0 +1,5 @@
+application/cache/twig/*
+assets/upload/*.jpg
+assets/upload/*.png
+assets/upload/*.gif
+*.swp
